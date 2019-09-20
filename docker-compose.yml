@@ -1,0 +1,13 @@
+version: '3'
+services:
+  db:
+    container_name: db
+    image: mysql/mysql-server:5.7
+    restart: unless-stopped
+    tty: true
+    environment:
+      MYSQL_DATABASE: company
+      MYSQL_ROOT_PASSWORD: company
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3306:3306"
