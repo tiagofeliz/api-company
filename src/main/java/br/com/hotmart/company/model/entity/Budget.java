@@ -3,10 +3,7 @@ package br.com.hotmart.company.model.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Data
@@ -20,5 +17,7 @@ public class Budget {
     private double value;
     private LocalDate startDate;
     private LocalDate endDate;
+    @OneToOne
+    private Department department;
 
 }

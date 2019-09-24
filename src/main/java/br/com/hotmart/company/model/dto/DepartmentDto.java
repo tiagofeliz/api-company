@@ -23,4 +23,13 @@ public class DepartmentDto {
         this.budgets = department.getBudgets();
         this.projects = department.getProjects();
     }
+
+    public Department toEntity(){
+        Department department = new Department();
+        department.setId(this.id);
+        department.setName(this.name);
+        department.setBudgets(this.budgets);
+        department.setProjects(this.projects);
+        return department;
+    }
 }
