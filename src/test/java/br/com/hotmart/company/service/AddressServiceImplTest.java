@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import br.com.hotmart.company.model.dto.AddressDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.repository.AddressRepository;
+import br.com.hotmart.company.service.impl.AddressServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

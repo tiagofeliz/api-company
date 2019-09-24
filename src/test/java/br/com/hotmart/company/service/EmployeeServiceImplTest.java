@@ -5,6 +5,8 @@ import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Gender;
 import br.com.hotmart.company.repository.EmployeeRepository;
+import br.com.hotmart.company.service.impl.AddressServiceImpl;
+import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -118,7 +120,7 @@ public class EmployeeServiceImplTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testPUTUpdateShouldThrowAExecptionWhenEmployeeIdIsInvalid(){
+    public void shouldThrowAExecptionWhenEmployeesOnUpdateIdIsInvalid(){
         Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
         Employee employee = new Employee();
@@ -162,7 +164,7 @@ public class EmployeeServiceImplTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void shouldThrowAExecptionWhenEmployeeIdIsInvalid(){
+    public void shouldThrowAExecptionWhenEmployeesOnShowIdIsInvalid(){
         Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
         employeeService.delete(1L);

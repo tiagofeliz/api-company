@@ -3,7 +3,7 @@ package br.com.hotmart.company.controller;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.form.EmployeeForm;
-import br.com.hotmart.company.service.EmployeeServiceImpl;
+import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +46,7 @@ public class EmployeeController {
         Employee employee = form.toEntity();
         EmployeeDto dto = employeeService.create(employee);
 
-        URI uri = uriBuilder.path("/v1/employee/{id}").buildAndExpand(dto.getId()).toUri();
+        URI uri = uriBuilder.path("/employee/{id}").buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);
     }
 

@@ -3,7 +3,7 @@ package br.com.hotmart.company.controller;
 import br.com.hotmart.company.model.dto.AddressDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.form.AddressForm;
-import br.com.hotmart.company.service.AddressServiceImpl;
+import br.com.hotmart.company.service.impl.AddressServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

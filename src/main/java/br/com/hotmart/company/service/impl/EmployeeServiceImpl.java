@@ -1,9 +1,9 @@
-package br.com.hotmart.company.service;
+package br.com.hotmart.company.service.impl;
 
 import br.com.hotmart.company.model.dto.EmployeeDto;
-import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.repository.EmployeeRepository;
+import br.com.hotmart.company.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +47,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Optional<Employee> employeeOptional = employeeRepository.findById(id);
         if(employeeOptional.isPresent()) {
             setEmployeeSupervisor(employee);
-            updateEmployee(employeeOptional.get(), employee);
+            save(employeeOptional.get(), employee);
             addressService.save(employeeOptional.get().getAddress(), employee.getAddress());
             return new EmployeeDto(employeeOptional.get());
         }else{
@@ -66,7 +66,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    private void updateEmployee(Employee currentEmployee, Employee toUpdateEmployee) {
+    private void save(Employee currentEmployee, Employee toUpdateEmployee) {
         currentEmployee.setName(toUpdateEmployee.getName());
         currentEmployee.setCpf(toUpdateEmployee.getCpf());
         currentEmployee.setSalary(toUpdateEmployee.getSalary());
