@@ -66,7 +66,7 @@ public class DepartmentServiceImplTest {
     }
 
     @Test
-    public void shouldReturnEmptyWhenIdIsEnvalid(){
+    public void shouldReturnEmptyWhenIdIsInvalid(){
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
 
         Optional<DepartmentDto> departmentDto = departmentService.findById(1L);
