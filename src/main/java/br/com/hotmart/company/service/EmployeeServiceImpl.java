@@ -3,7 +3,6 @@ package br.com.hotmart.company.service;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.entity.Employee;
-import br.com.hotmart.company.repository.AddressRepository;
 import br.com.hotmart.company.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +18,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    private AddressRepository addressRepository;
+    private AddressServiceImpl addressService;
 
     @Override
     public List<EmployeeDto> findAll() {
@@ -39,8 +38,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDto create(Employee employee) {
         setEmployeeSupervisor(employee);
-        Address address = addressRepository.save(employee.getAddress());
-        employee.setAddress(address);
+        addressService.create(employee.getAddress());
         return new EmployeeDto(employeeRepository.save(employee));
     }
 
@@ -50,7 +48,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(employeeOptional.isPresent()) {
             setEmployeeSupervisor(employee);
             updateEmployee(employeeOptional.get(), employee);
-            updateAddress(employeeOptional.get().getAddress(), employee.getAddress());
+            addressService.save(employeeOptional.get().getAddress(), employee.getAddress());
             return new EmployeeDto(employeeOptional.get());
         }else{
             throw new RuntimeException("Employee not found");
@@ -75,14 +73,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         currentEmployee.setGender(toUpdateEmployee.getGender());
         currentEmployee.setBirthDate(toUpdateEmployee.getBirthDate());
         currentEmployee.setSupervisor(toUpdateEmployee.getSupervisor());
-    }
-
-    private void updateAddress(Address currentAddress, Address toUpdateAddress) {
-        currentAddress.setCountry(toUpdateAddress.getCountry());
-        currentAddress.setCity(toUpdateAddress.getCity());
-        currentAddress.setStreet(toUpdateAddress.getStreet());
-        currentAddress.setUf(toUpdateAddress.getUf());
-        currentAddress.setZipCode(toUpdateAddress.getZipCode());
     }
 
     @Override

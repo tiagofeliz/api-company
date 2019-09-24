@@ -29,8 +29,11 @@ public class EmployeeServiceImplTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private AddressServiceImpl addressService;
+
     @Test
-    public void testGETIndexShouldReturnAEmptyListWhenThereNoAreRecords(){
+    public void shouldReturnAEmptyListWhenThereNoAreRecords(){
         List<Employee> employeeList = new ArrayList<>();
         Mockito.when(employeeRepository.findAll()).thenReturn(employeeList);
         List<EmployeeDto> employees = employeeService.findAll();
@@ -39,7 +42,7 @@ public class EmployeeServiceImplTest {
     }
 
     @Test
-    public void testGETIndexShouldReturnAListOfEmployeesWhenThereAreRecords(){
+    public void shouldReturnAListOfEmployeesWhenThereAreRecords(){
         Address address = new Address(
                 "Brasil",
                 "MG",
@@ -67,7 +70,7 @@ public class EmployeeServiceImplTest {
     }
 
     @Test
-    public void testGETShowShouldReturnAEmployee(){
+    public void shouldReturnAEmployee(){
         Address address = new Address(
                 "Brasil",
                 "MG",
@@ -93,7 +96,7 @@ public class EmployeeServiceImplTest {
     }
 
     @Test
-    public void testGETShowShouldReturnEmptyIfTheIdIsInvalid(){
+    public void shouldReturnEmptyIfTheIdIsInvalid(){
         Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
         Optional<EmployeeDto> employee = employeeService.findById(1L);
@@ -102,7 +105,7 @@ public class EmployeeServiceImplTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testPOSTCreateShouldThrowAExecptionWhenSupervisorIdIsInvalid(){
+    public void shouldThrowAExecptionWhenSupervisorIdIsInvalid(){
         Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
         Employee supervisor = new Employee();
@@ -120,7 +123,49 @@ public class EmployeeServiceImplTest {
 
         Employee employee = new Employee();
 
-        employeeService.create(employee);
+        employeeService.update(employee, 1L);
+    }
+
+    @Test
+    public void shouldUpdateAEmployee(){
+        Address address = new Address(
+                "Brasil",
+                "MG",
+                "BH",
+                "Entre Rios",
+                "30710-080");
+
+        Employee currentEmployee = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                address,
+                null);
+        currentEmployee.setId(1L);
+
+        Employee updateTo = new Employee(
+                "Tiago Triste",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                address,
+                null);
+
+        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(currentEmployee));
+
+        EmployeeDto updatedEmployee = employeeService.update(updateTo, 1L);
+
+        assertEquals(updateTo.getName(), updatedEmployee.getName());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAExecptionWhenEmployeeIdIsInvalid(){
+        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        employeeService.delete(1L);
     }
 
 }

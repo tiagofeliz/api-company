@@ -25,6 +25,9 @@ public class EmployeeController {
     @GetMapping
     public ResponseEntity<List<EmployeeDto>> index(){
         List<EmployeeDto> employees = employeeService.findAll();
+        if(employees.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(employees);
     }
 
