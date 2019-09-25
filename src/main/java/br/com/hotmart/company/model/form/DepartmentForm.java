@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class DepartmentForm {
 
-    private Long id;
     @NotNull @NotEmpty
     private String name;
     private List<Project> projects;

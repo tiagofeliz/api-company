@@ -1,6 +1,5 @@
 package br.com.hotmart.company.model.form;
 
-import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Gender;
 import lombok.Data;
@@ -36,6 +35,11 @@ public class EmployeeForm {
         employee.setBirthDate(this.getBirthDate());
         employee.setSalary(this.getSalary());
         employee.setGender(this.getGender());
+
+        if(this.address == null){
+            throw new IllegalArgumentException("Employee's address is required");
+        }
+
         employee.setAddress(this.address.toEntity());
 
         if(this.idSupervisor != null) {

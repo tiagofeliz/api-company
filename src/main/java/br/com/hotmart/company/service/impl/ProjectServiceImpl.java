@@ -26,10 +26,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Optional<ProjectDto> findById(Long id) {
         Optional<Project> project = projectRepository.findById(id);
-        if(project.isPresent()){
-            return Optional.of(new ProjectDto(project.get()));
-        }
-        return Optional.empty();
+        return project.map(ProjectDto::new);
     }
 
     @Override

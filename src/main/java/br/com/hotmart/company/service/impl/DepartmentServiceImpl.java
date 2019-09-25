@@ -26,10 +26,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Optional<DepartmentDto> findById(Long id) {
         Optional<Department> department = departmentRepository.findById(id);
-        if(department.isPresent()){
-            return Optional.of(new DepartmentDto(department.get()));
-        }
-        return Optional.empty();
+        return department.map(DepartmentDto::new);
     }
 
     @Override

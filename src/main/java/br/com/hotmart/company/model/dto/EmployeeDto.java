@@ -1,6 +1,5 @@
 package br.com.hotmart.company.model.dto;
 
-import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Gender;
 import lombok.Data;

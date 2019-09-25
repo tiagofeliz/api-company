@@ -1,7 +1,6 @@
 package br.com.hotmart.company.model.form;
 
 import br.com.hotmart.company.model.entity.Budget;
-import br.com.hotmart.company.model.entity.Department;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

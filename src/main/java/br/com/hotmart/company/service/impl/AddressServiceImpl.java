@@ -14,8 +14,11 @@ import java.util.stream.Collectors;
 @Component
 public class AddressServiceImpl implements AddressService {
 
-    @Autowired
-    private AddressRepository addressRepository;
+    private final AddressRepository addressRepository;
+
+    public AddressServiceImpl(AddressRepository addressRepository) {
+        this.addressRepository = addressRepository;
+    }
 
     @Override
     public List<AddressDto> findAll() {
@@ -49,9 +52,6 @@ public class AddressServiceImpl implements AddressService {
 
     public Optional<AddressDto> findById(Long id) {
         Optional<Address> addressOptional = addressRepository.findById(id);
-        if(addressOptional.isPresent()){
-            return Optional.of(new AddressDto(addressOptional.get()));
-        }
-        return Optional.empty();
+        return addressOptional.map(AddressDto::new);
     }
 }

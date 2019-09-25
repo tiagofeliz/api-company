@@ -23,10 +23,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     public Optional<BudgetDto> findById(Long id) {
         Optional<Budget> budget = budgetRepository.findById(id);
-        if(budget.isPresent()){
-            return Optional.of(new BudgetDto(budget.get()));
-        }
-        return Optional.empty();
+        return budget.map(BudgetDto::new);
     }
 
     @Override
@@ -40,8 +37,7 @@ public class BudgetServiceImpl implements BudgetService {
         if(!departmentDto.isPresent()){
             throw new RuntimeException("Budget's department not found");
         }
-        Department department = departmentDto.get().toEntity();
-        return department;
+        return departmentDto.get().toEntity();
     }
 
     @Override

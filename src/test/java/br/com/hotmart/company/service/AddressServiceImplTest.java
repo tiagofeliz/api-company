@@ -1,8 +1,5 @@
 package br.com.hotmart.company.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import br.com.hotmart.company.model.dto.AddressDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.repository.AddressRepository;
@@ -17,6 +14,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AddressServiceImplTest {
@@ -97,9 +97,22 @@ public class AddressServiceImplTest {
 
         Mockito.when(addressRepository.findById(1L)).thenReturn(Optional.of(address));
 
-        Optional<AddressDto> newEmployee = addressService.findById(1L);
+        Optional<AddressDto> addressDto = addressService.findById(1L);
 
-        assertEquals(address.getStreet(), newEmployee.get().getStreet());
+        assertEquals(address.getStreet(), addressDto.get().getStreet());
+        assertEquals(address.getZipCode(), addressDto.get().getZipCode());
+        assertEquals(address.getCity(), addressDto.get().getCity());
+        assertEquals(address.getCountry(), addressDto.get().getCountry());
+        assertEquals(address.getUf(), addressDto.get().getUf());
+    }
+
+    @Test
+    public void shouldReturnEmptyWhenResourceIdIsNotFound(){
+        Mockito.when(addressRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Optional<AddressDto> address = addressService.findById(1L);
+
+        assertEquals(Optional.empty(), address);
     }
 
 }

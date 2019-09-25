@@ -1,10 +1,7 @@
 package br.com.hotmart.company.controller;
 
-import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
-import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Project;
-import br.com.hotmart.company.model.form.EmployeeForm;
 import br.com.hotmart.company.model.form.ProjectForm;
 import br.com.hotmart.company.service.impl.ProjectServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

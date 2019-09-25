@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddressForm {
 
-    private Long id;
     private String country;
     private String uf;
     private String city;

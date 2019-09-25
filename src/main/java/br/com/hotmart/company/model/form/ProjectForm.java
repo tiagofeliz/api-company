@@ -1,6 +1,5 @@
 package br.com.hotmart.company.model.form;
 
-import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Project;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

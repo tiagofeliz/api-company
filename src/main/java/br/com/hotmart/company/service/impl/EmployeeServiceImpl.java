@@ -29,10 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Optional<EmployeeDto> findById(Long id) {
         Optional<Employee> employee = employeeRepository.findById(id);
-        if(employee.isPresent()){
-            return Optional.of(new EmployeeDto(employee.get()));
-        }
-        return Optional.empty();
+        return employee.map(EmployeeDto::new);
     }
 
     @Override
