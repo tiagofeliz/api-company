@@ -1,6 +1,7 @@
 package br.com.hotmart.company.service;
 
 import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Employee;
 import org.springframework.http.ResponseEntity;
 
@@ -15,4 +16,5 @@ public interface EmployeeService {
     EmployeeDto update(Employee employee, Long id);
     void delete(Long id);
     List<EmployeeDto> supervisedEmployees(Long idSupervisor);
+    List<ProjectDto> projects(Long id);
 }

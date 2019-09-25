@@ -1,8 +1,11 @@
 package br.com.hotmart.company.service.impl;
 
 import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Employee;
+import br.com.hotmart.company.model.entity.Project;
 import br.com.hotmart.company.repository.EmployeeRepository;
+import br.com.hotmart.company.repository.ProjectRepository;
 import br.com.hotmart.company.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +22,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private AddressServiceImpl addressService;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @Override
     public List<EmployeeDto> findAll() {
@@ -78,6 +84,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<EmployeeDto> supervisedEmployees(Long idSupervisor) {
         List<Employee> employees = employeeRepository.findBySupervisor_Id(idSupervisor);
         return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProjectDto> projects(Long id) {
+        Optional<Employee> employee = findBy(id);
+        List<Project> projects = projectRepository.findByEmployees_Id(employee.get().getId());
+        return projects.stream().map(ProjectDto::new).collect(Collectors.toList());
     }
 
     public Optional<Employee> findBy(Long id){ // TODO refactor public method to private

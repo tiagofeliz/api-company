@@ -1,10 +1,13 @@
 package br.com.hotmart.company.service;
 
 import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Gender;
+import br.com.hotmart.company.model.entity.Project;
 import br.com.hotmart.company.repository.EmployeeRepository;
+import br.com.hotmart.company.repository.ProjectRepository;
 import br.com.hotmart.company.service.impl.AddressServiceImpl;
 import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
 import org.junit.Test;
@@ -33,6 +36,9 @@ public class EmployeeServiceImplTest {
 
     @Mock
     private AddressServiceImpl addressService;
+
+    @Mock
+    private ProjectRepository projectRepository;
 
     @Test
     public void shouldReturnAEmptyListWhenThereNoAreRecords(){
@@ -212,6 +218,49 @@ public class EmployeeServiceImplTest {
         assertEquals(employee.getSalary(), employees.get(0).getSalary(), 0.000001);
         assertEquals(supervisor.getId(), employees.get(0).getSupervisor().getId(), 0.000001);
         assertTrue(address.equals(employees.get(0).getAddress()));
+    }
+
+    @Test
+    public void shouldReturnAListOfProjectsWhereTheEmployeeWorks(){
+        Project project = new Project();
+        project.setId(1L);
+
+        Employee employee = new Employee();
+        employee.setId(1L);
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        project.setEmployees(employees);
+
+        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
+
+        List<Project> projectList = new ArrayList<>();
+        projectList.add(project);
+
+        Mockito.when(projectRepository.findByEmployees_Id(1L)).thenReturn(projectList);
+
+        List<ProjectDto> employeeProjects = employeeService.projects(1L);
+
+        assertEquals(1, employeeProjects.size());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionWhenEmployeesIdIsInvalid(){
+        Project project = new Project();
+        project.setId(1L);
+
+        Employee employee = new Employee();
+        employee.setId(1L);
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        project.setEmployees(employees);
+
+        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        employeeService.projects(1L);
     }
 
 }

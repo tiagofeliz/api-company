@@ -1,6 +1,7 @@
 package br.com.hotmart.company.controller;
 
 import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.form.EmployeeForm;
 import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
@@ -70,6 +71,15 @@ public class EmployeeController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping("/{id}/projects")
+    public ResponseEntity<List<ProjectDto>> projects(@PathVariable Long id){
+        List<ProjectDto> employeeProjects = employeeService.projects(id);
+        if(employeeProjects.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(employeeProjects);
     }
 
 }

@@ -67,13 +67,21 @@ public class ProjectController {
     @GetMapping("/{id}/registerEmployee/{employeeId}")
     @Transactional
     public ResponseEntity<List<EmployeeDto>> registerEmployee(@PathVariable Long id, @PathVariable Long employeeId){
-        return ResponseEntity.ok(projectService.registerEmployee(id, employeeId));
+        List<EmployeeDto> projectEmployees = projectService.registerEmployee(id, employeeId);
+        if(projectEmployees.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(projectEmployees);
     }
 
     @GetMapping("/{id}/unregisterEmployee/{employeeId}")
     @Transactional
     public ResponseEntity<List<EmployeeDto>> unregisterEmployee(@PathVariable Long id, @PathVariable Long employeeId){
-        return ResponseEntity.ok(projectService.unregisterEmployee(id, employeeId));
+        List<EmployeeDto> projectEmployees = projectService.unregisterEmployee(id, employeeId);
+        if(projectEmployees.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(projectEmployees);
     }
 
 }
