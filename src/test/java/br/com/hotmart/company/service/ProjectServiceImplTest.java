@@ -1,9 +1,14 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
+import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.model.entity.Employee;
+import br.com.hotmart.company.model.entity.Gender;
 import br.com.hotmart.company.model.entity.Project;
+import br.com.hotmart.company.repository.EmployeeRepository;
 import br.com.hotmart.company.repository.ProjectRepository;
+import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
 import br.com.hotmart.company.service.impl.ProjectServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +33,9 @@ public class ProjectServiceImplTest {
 
     @Mock
     private ProjectRepository projectRepository;
+
+    @Mock
+    private EmployeeServiceImpl employeeService;
 
     @Test
     public void shouldReturnAListOfProject(){
@@ -131,6 +139,126 @@ public class ProjectServiceImplTest {
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.empty());
 
         projectService.delete(1L);
+    }
+
+    @Test
+    public void shouldRegisterAEmployeeInAProjectWhenProjectEmployeListIsNull(){
+        Project project = new Project();
+        project.setId(1L);
+        project.setName("Revisão de produtos");
+        project.setValue(1700.0);
+        project.setStartDate(LocalDate.of(2019, 9, 1));
+        project.setEndDate(LocalDate.of(2019, 9, 30));
+
+        Address address = new Address(
+                "Brasil",
+                "MG",
+                "BH",
+                "Entre Rios",
+                "30710-080");
+
+        Employee employee = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                address,
+                null);
+        employee.setId(1L);
+
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        List<EmployeeDto> employees = projectService.registerEmployee(projectId, employeeId);
+
+        assertEquals(1, employees.size());
+        assertEquals(employee.getId(), employees.get(0).getId(), 0.00001);
+        assertEquals(employee.getName(), employees.get(0).getName());
+        assertEquals(employee.getCpf(), employees.get(0).getCpf());
+        assertEquals(employee.getBirthDate(), employees.get(0).getBirthDate());
+        assertEquals(employee.getGender(), employees.get(0).getGender());
+    }
+
+    @Test
+    public void shouldRegisterAEmployeeInAProjectWhenProjectEmployeListIsNotNull(){
+        Address address = new Address(
+                "Brasil",
+                "MG",
+                "BH",
+                "Entre Rios",
+                "30710-080");
+
+        Project project = new Project();
+        project.setId(1L);
+        project.setName("Revisão de produtos");
+        project.setValue(1700.0);
+        project.setStartDate(LocalDate.of(2019, 9, 1));
+        project.setEndDate(LocalDate.of(2019, 9, 30));
+
+        List<Employee> projectEmployees = new ArrayList<>();
+        projectEmployees.add(new Employee(
+                "Capitu Capitolina",
+                "027.715.512-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.FEMALE,
+                address,
+                null));
+
+        project.setEmployees(projectEmployees);
+
+        Employee employee = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                address,
+                null);
+        employee.setId(1L);
+
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        List<EmployeeDto> employees = projectService.registerEmployee(projectId, employeeId);
+
+        assertEquals(2, employees.size());
+        assertEquals(employee.getId(), employees.get(1).getId(), 0.00001);
+        assertEquals(employee.getName(), employees.get(1).getName());
+        assertEquals(employee.getCpf(), employees.get(1).getCpf());
+        assertEquals(employee.getBirthDate(), employees.get(1).getBirthDate());
+        assertEquals(employee.getGender(), employees.get(1).getGender());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAExceptionWhenProjectIdIsInvalid(){
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.empty());
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        projectService.registerEmployee(projectId, employeeId);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAExceptionWhenEmployeeIdIsInvalid(){
+        Project project = new Project();
+        project.setId(1L);
+        project.setName("Revisão de produtos");
+        project.setValue(1700.0);
+        project.setStartDate(LocalDate.of(2019, 9, 1));
+        project.setEndDate(LocalDate.of(2019, 9, 30));
+
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.empty());
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        projectService.registerEmployee(projectId, employeeId);
     }
 
 }

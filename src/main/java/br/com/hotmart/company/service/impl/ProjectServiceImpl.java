@@ -1,12 +1,15 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
+import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Project;
 import br.com.hotmart.company.repository.ProjectRepository;
 import br.com.hotmart.company.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,6 +19,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private EmployeeServiceImpl employeeService;
 
     @Override
     public List<ProjectDto> findAll() {
@@ -36,13 +42,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDto update(Project project, Long id) {
-        Optional<Project> projectOptional = projectRepository.findById(id);
-        if(projectOptional.isPresent()){
-            save(projectOptional.get(), project);
-            return new ProjectDto(projectOptional.get());
-        }else{
-            throw new RuntimeException("Project not found");
-        }
+        Optional<Project> projectOptional = findBy(id);
+        save(projectOptional.get(), project);
+        return new ProjectDto(projectOptional.get());
     }
 
     private void save(Project currentProject, Project updateTo) {
@@ -54,11 +56,34 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void delete(Long id) {
-        Optional<Project> project = projectRepository.findById(id);
-        if(project.isPresent()){
-            projectRepository.delete(project.get());
+        Optional<Project> project = findBy(id);
+        projectRepository.delete(project.get());
+    }
+
+    @Override
+    public List<EmployeeDto> registerEmployee(Long projectId, Long employeeId) {
+        Optional<Project> project = findBy(projectId);
+        Optional<Employee> employee = employeeService.findBy(employeeId); // TODO refactor public method to private
+        register(project, employee);
+        return project.get().getEmployees().stream().map(EmployeeDto::new).collect(Collectors.toList());
+    }
+
+    private void register(Optional<Project> project, Optional<Employee> employee) {
+        if(project.get().getEmployees() == null){
+            List<Employee> projectEmployees = new ArrayList<>();
+            projectEmployees.add(employee.get());
+            project.get().setEmployees(projectEmployees);
         }else{
+            List<Employee> projectEmployees = project.get().getEmployees();
+            projectEmployees.add(employee.get());
+        }
+    }
+
+    private Optional<Project> findBy(Long id){
+        Optional<Project> project = projectRepository.findById(id);
+        if(!project.isPresent()){
             throw new RuntimeException("Project not found");
         }
+        return project;
     }
 }

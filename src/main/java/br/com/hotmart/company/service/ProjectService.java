@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Project;
 import org.springframework.stereotype.Component;
@@ -14,5 +15,5 @@ public interface ProjectService {
     ProjectDto create(Project project);
     ProjectDto update(Project project, Long id);
     void delete(Long id);
-
+    List<EmployeeDto> registerEmployee(Long projectId, Long employeeId);
 }

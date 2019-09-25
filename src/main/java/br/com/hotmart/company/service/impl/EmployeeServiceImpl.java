@@ -41,15 +41,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDto update(Employee employee, Long id) {
-        Optional<Employee> employeeOptional = employeeRepository.findById(id);
-        if(employeeOptional.isPresent()) {
-            setEmployeeSupervisor(employee);
-            save(employeeOptional.get(), employee);
-            addressService.save(employeeOptional.get().getAddress(), employee.getAddress());
-            return new EmployeeDto(employeeOptional.get());
-        }else{
-            throw new RuntimeException("Employee not found");
-        }
+        Optional<Employee> employeeOptional = findBy(id);
+        setEmployeeSupervisor(employee);
+        save(employeeOptional.get(), employee);
+        addressService.save(employeeOptional.get().getAddress(), employee.getAddress());
+        return new EmployeeDto(employeeOptional.get());
     }
 
     private void setEmployeeSupervisor(Employee employee) {
@@ -74,17 +70,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void delete(Long id) {
-        Optional<Employee> employee = employeeRepository.findById(id);
-        if(employee.isPresent()) {
-            employeeRepository.delete(employee.get());
-        }else{
-            throw new RuntimeException("Employee not found");
-        }
+        Optional<Employee> employee = findBy(id);
+        employeeRepository.delete(employee.get());
     }
 
     @Override
     public List<EmployeeDto> supervisedEmployees(Long idSupervisor) {
         List<Employee> employees = employeeRepository.findBySupervisor_Id(idSupervisor);
         return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+    }
+
+    public Optional<Employee> findBy(Long id){ // TODO refactor public method to private
+        Optional<Employee> employee = employeeRepository.findById(id);
+        if(!employee.isPresent()){
+            throw new RuntimeException("Employee not found");
+        }
+        return employee;
     }
 }

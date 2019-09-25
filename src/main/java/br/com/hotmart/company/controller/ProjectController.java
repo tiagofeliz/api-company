@@ -1,5 +1,6 @@
 package br.com.hotmart.company.controller;
 
+import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Project;
 import br.com.hotmart.company.model.form.ProjectForm;
@@ -61,6 +62,12 @@ public class ProjectController {
     public ResponseEntity<?> delete(@PathVariable Long id){
         projectService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/registerEmployee/{employeeId}")
+    @Transactional
+    public ResponseEntity<List<EmployeeDto>> registerEmployee(@PathVariable Long id, @PathVariable Long employeeId, UriComponentsBuilder uriBuilder){
+        return ResponseEntity.ok(projectService.registerEmployee(id, employeeId));
     }
 
 }
