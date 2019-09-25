@@ -248,10 +248,6 @@ public class ProjectServiceImplTest {
     public void shouldThrowAExceptionWhenEmployeeIdIsInvalid(){
         Project project = new Project();
         project.setId(1L);
-        project.setName("Revisão de produtos");
-        project.setValue(1700.0);
-        project.setStartDate(LocalDate.of(2019, 9, 1));
-        project.setEndDate(LocalDate.of(2019, 9, 30));
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.empty());
@@ -259,6 +255,70 @@ public class ProjectServiceImplTest {
         Long projectId = 1L;
         Long employeeId = 1L;
         projectService.registerEmployee(projectId, employeeId);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionWhenEmployeeAlredyWorksInTheProject(){
+        Project project = new Project();
+        project.setId(1L);
+
+        Employee employee = new Employee();
+        employee.setId(1L);
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        project.setEmployees(employees);
+
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        projectService.registerEmployee(projectId, employeeId);
+    }
+
+    @Test
+    public void shouldUnregisterAEmployeeFromAProject(){
+        Project project = new Project();
+        project.setId(1L);
+
+        Employee employee = new Employee();
+        employee.setId(1L);
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        project.setEmployees(employees);
+
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        List<EmployeeDto> projectEmployees = projectService.unregisterEmployee(projectId, employeeId);
+
+        assertTrue(projectEmployees.isEmpty());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionWhenEmployeeDontWorksInTheProject(){
+        Project project = new Project();
+        project.setId(1L);
+
+        Employee employee = new Employee();
+        employee.setId(1L);
+
+        List<Employee> employees = new ArrayList<>();
+
+        project.setEmployees(employees);
+
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        projectService.unregisterEmployee(projectId, employeeId);
     }
 
 }

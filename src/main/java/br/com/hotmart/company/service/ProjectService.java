@@ -16,4 +16,5 @@ public interface ProjectService {
     ProjectDto update(Project project, Long id);
     void delete(Long id);
     List<EmployeeDto> registerEmployee(Long projectId, Long employeeId);
+    List<EmployeeDto> unregisterEmployee(Long projectId, Long employeeId);
 }
