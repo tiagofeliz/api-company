@@ -170,4 +170,48 @@ public class EmployeeServiceImplTest {
         employeeService.delete(1L);
     }
 
+    @Test
+    public void shouldReturnAListOfSupervisedEmployees(){
+        Address address = new Address(
+                "Brasil",
+                "MG",
+                "BH",
+                "Entre Rios",
+                "30710-080");
+
+        Employee supervisor = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                address,
+                null);
+        supervisor.setId(1L);
+
+        Employee employee = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                address,
+                supervisor);
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        Mockito.when(employeeRepository.findBySupervisor_Id(1L)).thenReturn(employees);
+
+        List<EmployeeDto> supervisedEmployees = employeeService.supervisedEmployees(1L);
+
+        assertEquals(1, supervisedEmployees.size());
+        assertEquals(employee.getName(), employees.get(0).getName());
+        assertEquals(employee.getCpf(), employees.get(0).getCpf());
+        assertEquals(employee.getBirthDate(), employees.get(0).getBirthDate());
+        assertEquals(employee.getSalary(), employees.get(0).getSalary(), 0.000001);
+        assertEquals(supervisor.getId(), employees.get(0).getSupervisor().getId(), 0.000001);
+        assertTrue(address.equals(employees.get(0).getAddress()));
+    }
+
 }

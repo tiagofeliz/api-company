@@ -13,5 +13,6 @@ public interface EmployeeService {
     Optional<EmployeeDto> findById(Long id);
     EmployeeDto create(Employee employee);
     EmployeeDto update(Employee employee, Long id);
-    EmployeeDto delete(Long id);
+    void delete(Long id);
+    List<EmployeeDto> supervisedEmployees(Long idSupervisor);
 }

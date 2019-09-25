@@ -73,13 +73,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDto delete(Long id) {
+    public void delete(Long id) {
         Optional<Employee> employee = employeeRepository.findById(id);
         if(employee.isPresent()) {
             employeeRepository.delete(employee.get());
-            return new EmployeeDto(employee.get());
         }else{
             throw new RuntimeException("Employee not found");
         }
+    }
+
+    @Override
+    public List<EmployeeDto> supervisedEmployees(Long idSupervisor) {
+        List<Employee> employees = employeeRepository.findBySupervisor_Id(idSupervisor);
+        return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
     }
 }

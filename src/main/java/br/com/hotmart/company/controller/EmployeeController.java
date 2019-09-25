@@ -58,8 +58,18 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<EmployeeDto> delete(@PathVariable Long id){
-        return ResponseEntity.ok(employeeService.delete(id));
+    public ResponseEntity<?> delete(@PathVariable Long id){
+        employeeService.delete(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/supervisedEmployees")
+    public ResponseEntity<List<EmployeeDto>> supervisedEmployees(@PathVariable Long id){
+        List<EmployeeDto> employees = employeeService.supervisedEmployees(id);
+        if(employees.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(employees);
     }
 
 }
