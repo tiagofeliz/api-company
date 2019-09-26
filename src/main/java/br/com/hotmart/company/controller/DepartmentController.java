@@ -1,6 +1,7 @@
 package br.com.hotmart.company.controller;
 
 import br.com.hotmart.company.model.dto.DepartmentDto;
+import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.entity.Department;
 import br.com.hotmart.company.model.form.DepartmentForm;
 import br.com.hotmart.company.service.impl.DepartmentServiceImpl;
@@ -62,6 +63,15 @@ public class DepartmentController {
     public ResponseEntity<DepartmentDto> delete(@PathVariable Long id){
         departmentService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/employees")
+    public ResponseEntity<?> employees(@PathVariable Long id){
+        List<EmployeeDto> departmentEmployees = departmentService.employees(id);
+        if(departmentEmployees.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(departmentEmployees);
     }
 
 }

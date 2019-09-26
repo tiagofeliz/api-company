@@ -4,6 +4,7 @@ import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Project;
 import br.com.hotmart.company.model.form.ProjectForm;
+import br.com.hotmart.company.model.form.UpdateProjectForm;
 import br.com.hotmart.company.service.impl.ProjectServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class ProjectController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<ProjectDto> update(@PathVariable Long id, @RequestBody @Valid ProjectForm form){
+    public ResponseEntity<ProjectDto> update(@PathVariable Long id, @RequestBody @Valid UpdateProjectForm form){
         Project project = form.toEntity();
         return ResponseEntity.ok(projectService.update(project, id));
     }

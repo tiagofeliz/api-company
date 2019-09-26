@@ -1,13 +1,12 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
-import br.com.hotmart.company.model.entity.Address;
-import br.com.hotmart.company.model.entity.Employee;
-import br.com.hotmart.company.model.entity.Gender;
-import br.com.hotmart.company.model.entity.Project;
+import br.com.hotmart.company.model.entity.*;
 import br.com.hotmart.company.repository.EmployeeRepository;
 import br.com.hotmart.company.repository.ProjectRepository;
+import br.com.hotmart.company.service.impl.DepartmentServiceImpl;
 import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
 import br.com.hotmart.company.service.impl.ProjectServiceImpl;
 import org.junit.Test;
@@ -36,6 +35,9 @@ public class ProjectServiceImplTest {
 
     @Mock
     private EmployeeServiceImpl employeeService;
+
+    @Mock
+    private DepartmentServiceImpl departmentService;
 
     @Test
     public void shouldReturnAListOfProject(){
@@ -97,19 +99,41 @@ public class ProjectServiceImplTest {
         assertEquals(Optional.empty(), projectDto);
     }
 
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionWhenDepartmentIdIsInvalid(){
+        Department department = new Department();
+        department.setId(1L);
+
+        Project project = new Project();
+        project.setDepartment(department);
+
+        Mockito.when(departmentService.findById(1L)).thenReturn(Optional.empty());
+
+        projectService.create(project);
+    }
+
     @Test
     public void shouldCreateANewProject(){
+        Department department = new Department();
+        department.setId(1L);
+
         Project project = new Project();
         project.setName("Revisão de produtos");
         project.setValue(1700.0);
         project.setStartDate(LocalDate.of(2019, 9, 1));
         project.setEndDate(LocalDate.of(2019, 9, 30));
+        project.setDepartment(department);
+
+        Mockito.when(departmentService.findById(1L)).thenReturn(Optional.of(new DepartmentDto(department)));
 
         Mockito.when(projectRepository.save(project)).thenReturn(project);
 
         ProjectDto projectSaved = projectService.create(project);
 
         assertEquals(project.getName(), projectSaved.getName());
+        assertEquals(project.getValue(), projectSaved.getValue(), 0.00001);
+        assertEquals(project.getStartDate(), projectSaved.getStartDate());
+        assertEquals(project.getEndDate(), projectSaved.getEndDate());
     }
 
     @Test

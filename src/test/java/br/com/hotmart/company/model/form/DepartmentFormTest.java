@@ -14,13 +14,11 @@ public class DepartmentFormTest {
         DepartmentForm form = new DepartmentForm();
         form.setName("Backoffice");
         form.setBudgets(new ArrayList<>());
-        form.setProjects(new ArrayList<>());
 
         Department department = form.toEntity();
 
         assertEquals(form.getName(), department.getName());
         assertEquals(form.getBudgets(), department.getBudgets());
-        assertEquals(form.getProjects(), department.getProjects());
     }
 
 }

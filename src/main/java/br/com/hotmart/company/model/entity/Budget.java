@@ -1,5 +1,6 @@
 package br.com.hotmart.company.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +18,8 @@ public class Budget {
     private double value;
     private LocalDate startDate;
     private LocalDate endDate;
-    @OneToOne
+    @ManyToOne
+    @JsonIgnore
     private Department department;
 
 }

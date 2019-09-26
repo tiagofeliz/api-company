@@ -1,5 +1,6 @@
 package br.com.hotmart.company.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,13 @@ public class Project {
     private double value;
     private LocalDate startDate;
     private LocalDate endDate;
-    @OneToMany
+    @ManyToMany
+    @JoinTable(name = "employee_project",
+            joinColumns = { @JoinColumn(name = "employee_id") },
+            inverseJoinColumns = { @JoinColumn(name = "project_id") })
     private List<Employee> employees;
+    @ManyToOne
+    @JsonIgnore
+    private Department department;
 
 }

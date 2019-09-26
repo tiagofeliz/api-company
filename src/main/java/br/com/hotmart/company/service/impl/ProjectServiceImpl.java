@@ -1,7 +1,9 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
+import br.com.hotmart.company.model.entity.Department;
 import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Project;
 import br.com.hotmart.company.repository.ProjectRepository;
@@ -24,6 +26,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private EmployeeServiceImpl employeeService;
 
+    @Autowired
+    private DepartmentServiceImpl departmentService;
+
     @Override
     public List<ProjectDto> findAll() {
         List<Project> projects = projectRepository.findAll();
@@ -38,7 +43,18 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDto create(Project project) {
-        return new ProjectDto(projectRepository.save(project));
+        Department department = getDepartment(project.getDepartment().getId());
+        project.setDepartment(department);
+        projectRepository.save(project);
+        return new ProjectDto(project);
+    }
+
+    private Department getDepartment(Long id) {
+        Optional<DepartmentDto> departmentDto = departmentService.findById(id);
+        if(!departmentDto.isPresent()){
+            throw new RuntimeException("Project's department not found");
+        }
+        return departmentDto.get().toEntity();
     }
 
     @Override
@@ -104,7 +120,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
     }
 
-    private Optional<Project> findBy(Long id){
+    public Optional<Project> findBy(Long id){
         Optional<Project> project = projectRepository.findById(id);
         if(!project.isPresent()){
             throw new RuntimeException("Project not found");

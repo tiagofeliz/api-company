@@ -15,9 +15,9 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToMany
+    @OneToMany(mappedBy = "department")
     private List<Project> projects;
-    @OneToMany
+    @OneToMany(mappedBy = "department")
     private List<Budget> budgets;
 
 }

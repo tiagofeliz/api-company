@@ -1,8 +1,10 @@
 package br.com.hotmart.company.service;
 
 import br.com.hotmart.company.model.dto.DepartmentDto;
-import br.com.hotmart.company.model.entity.Department;
+import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.entity.*;
 import br.com.hotmart.company.repository.DepartmentRepository;
+import br.com.hotmart.company.repository.EmployeeRepository;
 import br.com.hotmart.company.service.impl.DepartmentServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,9 @@ public class DepartmentServiceImplTest {
 
     @Mock
     private DepartmentRepository departmentRepository;
+
+    @Mock
+    private EmployeeRepository employeeRepository;
 
     @Test
     public void shouldReturnAListOfDepartment(){
@@ -114,6 +120,51 @@ public class DepartmentServiceImplTest {
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
 
         departmentService.delete(1L);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionWhenDepartmentIdIsInvalid(){
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        departmentService.employees(1L);
+    }
+
+    @Test
+    public void shouldReturnAListOfEmployeesThatWorksOnADepartment(){
+        Employee employee = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                new Address(),
+                null);
+        employee.setId(1L);
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        Department department = new Department();
+        department.setId(1L);
+
+        Project project = new Project();
+        project.setId(1L);
+        project.setDepartment(department);
+
+        project.setEmployees(employees);
+
+        List<Project> projects = new ArrayList<>();
+        projects.add(project);
+
+        department.setProjects(projects);
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+        Mockito.when(employeeRepository.findByProjectsDepartment_Id(1L)).thenReturn(employees);
+
+        List<EmployeeDto> departmentEmployees = departmentService.employees(1L);
+
+        assertEquals(1, departmentEmployees.size());
+        assertEquals(employees.get(0).getId(), departmentEmployees.get(0).getId(), 0.00001);
     }
 
 }
