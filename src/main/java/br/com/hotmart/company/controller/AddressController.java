@@ -23,6 +23,9 @@ public class AddressController {
     @GetMapping
     public ResponseEntity<List<AddressDto>> index(){
         List<AddressDto> addresses = addressService.findAll();
+        if(addresses.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(addresses);
     }
 
