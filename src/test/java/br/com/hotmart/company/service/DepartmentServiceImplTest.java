@@ -3,6 +3,7 @@ package br.com.hotmart.company.service;
 import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.*;
 import br.com.hotmart.company.repository.DepartmentRepository;
 import br.com.hotmart.company.repository.EmployeeRepository;
@@ -351,6 +352,51 @@ public class DepartmentServiceImplTest {
         assertEquals(budget.getValue(), budgetStatusList.get(0).getValue(), 0.00001);
         assertEquals(budget.getStartDate(), budgetStatusList.get(0).getStartDate());
         assertEquals(budget.getEndDate(), budgetStatusList.get(0).getEndDate());
+    }
+
+    @Test
+    public void shouldReturnAListOfDepartmentProjects(){
+        Department department = new Department();
+        department.setId(1L);
+
+        Project project = new Project();
+        project.setValue(6700);
+        project.setEmployees(Arrays.asList(new Employee()));
+        project.setStartDate(LocalDate.of(2019, 5, 10));
+        project.setEndDate(LocalDate.of(2019, 5, 15));
+
+        department.setProjects(Arrays.asList(project));
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<ProjectDto> departmentProjects = departmentService.projects(1L);
+
+        assertEquals(1, departmentProjects.size());
+        assertEquals(project.getValue(), departmentProjects.get(0).getValue(), 0.000001);
+        assertEquals(project.getStartDate(), departmentProjects.get(0).getStartDate());
+        assertEquals(project.getEndDate(), departmentProjects.get(0).getEndDate());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldReturnAnExceptionWhenDepartmentIdIsInvalid(){
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        departmentService.projects(1L);
+    }
+
+    @Test
+    public void shouldReturnAEmptyListOfDepartmentProjectsWhenDepartmentHasNoProjects(){
+        Department department = new Department();
+        department.setId(1L);
+
+        department.setProjects(new ArrayList<>());
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<ProjectDto> departmentProjects = departmentService.projects(1L);
+
+        assertEquals(0, departmentProjects.size());
+        assertTrue(departmentProjects.isEmpty());
     }
 
 }

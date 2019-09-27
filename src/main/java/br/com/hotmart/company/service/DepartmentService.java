@@ -18,4 +18,5 @@ public interface DepartmentService {
     void delete(Long id);
     List<EmployeeDto> employees(Long id);
     List<BudgetStatusDto> budgetStatus(Long id);
+    List<ProjectDto> projects(Long id);
 }

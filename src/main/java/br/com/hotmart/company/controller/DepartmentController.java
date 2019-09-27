@@ -3,6 +3,7 @@ package br.com.hotmart.company.controller;
 import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Department;
 import br.com.hotmart.company.model.form.DepartmentForm;
 import br.com.hotmart.company.service.impl.DepartmentServiceImpl;
@@ -82,6 +83,15 @@ public class DepartmentController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(departmentBudgetsStatus);
+    }
+
+    @GetMapping("/{id}/projects")
+    public ResponseEntity<List<ProjectDto>> projects(@PathVariable Long id){
+        List<ProjectDto> departmentProjects = departmentService.projects(id);
+        if(departmentProjects.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(departmentProjects);
     }
 
 }

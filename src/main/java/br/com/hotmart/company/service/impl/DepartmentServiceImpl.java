@@ -3,6 +3,7 @@ package br.com.hotmart.company.service.impl;
 import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
+import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.*;
 import br.com.hotmart.company.repository.DepartmentRepository;
 import br.com.hotmart.company.repository.EmployeeRepository;
@@ -81,6 +82,12 @@ public class DepartmentServiceImpl implements DepartmentService {
             budgetStatusList.add(new BudgetStatusDto(budget, budgetStatus));
         });
         return budgetStatusList;
+    }
+
+    @Override
+    public List<ProjectDto> projects(Long id) {
+        Optional<Department> department = findBy(id);
+        return department.get().getProjects().stream().map(ProjectDto::new).collect(Collectors.toList());
     }
 
     private BudgetStatus statusFromBudget(Double budgetValue, Double sumOfProjectsValue) {
