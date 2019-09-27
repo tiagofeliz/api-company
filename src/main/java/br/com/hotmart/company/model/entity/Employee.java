@@ -22,7 +22,7 @@ public class Employee {
     private double salary;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
     @ManyToOne
     private Employee supervisor;

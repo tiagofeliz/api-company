@@ -15,9 +15,9 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<Project> projects;
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<Budget> budgets;
 
 }
