@@ -4,7 +4,6 @@ import br.com.hotmart.company.model.dto.AddressDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.repository.AddressRepository;
 import br.com.hotmart.company.service.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

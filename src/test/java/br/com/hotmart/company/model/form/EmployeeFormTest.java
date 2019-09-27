@@ -50,7 +50,7 @@ public class EmployeeFormTest {
         assertEquals(form.getBirthDate(), employee.getBirthDate());
         assertEquals(form.getCpf(), employee.getCpf());
         assertEquals(form.getIdSupervisor(), employee.getSupervisor().getId());
-        assertTrue(addressForm.toEntity().equals(employee.getAddress()));
+        assertEquals(addressForm.toEntity(), employee.getAddress());
     }
 
 }

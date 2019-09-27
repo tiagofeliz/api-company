@@ -108,7 +108,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     private void unregister(Optional<Project> project, Optional<Employee> employee) {
-        if(project.get().getEmployees() == null){
+        if(project.get().getEmployees().isEmpty()){
             throw new RuntimeException("This project have no employees to unregister");
         }else{
             List<Employee> projectEmployees = project.get().getEmployees();

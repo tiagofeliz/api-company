@@ -217,7 +217,7 @@ public class EmployeeServiceImplTest {
         assertEquals(employee.getBirthDate(), employees.get(0).getBirthDate());
         assertEquals(employee.getSalary(), employees.get(0).getSalary(), 0.000001);
         assertEquals(supervisor.getId(), employees.get(0).getSupervisor().getId(), 0.000001);
-        assertTrue(address.equals(employees.get(0).getAddress()));
+        assertEquals(address, employees.get(0).getAddress());
     }
 
     @Test

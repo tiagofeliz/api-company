@@ -103,9 +103,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private Double sumProjectsValueConsideringEmployeesSalary(List<Project> projects) {
         AtomicReference<Double> sumOfProjectsValue = new AtomicReference<>(0D);
-        projects.stream().forEach(project -> {
+        projects.forEach(project -> {
             List<Double> employeeSalaryList = project.getEmployees().stream().map(Employee::getSalary).collect(Collectors.toList());
-            Double employeesSalarySum = employeeSalaryList.stream().reduce(0D, (salary1, salary2) -> salary1 + salary2);
+            Double employeesSalarySum = employeeSalaryList.stream().reduce(0D, Double::sum);
             Double finalProjectValue = employeesSalarySum + project.getValue();
             sumOfProjectsValue.set(finalProjectValue);
         });

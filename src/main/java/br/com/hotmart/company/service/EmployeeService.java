@@ -3,7 +3,6 @@ package br.com.hotmart.company.service;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Employee;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;

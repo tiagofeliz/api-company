@@ -4,7 +4,6 @@ import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.*;
-import br.com.hotmart.company.repository.EmployeeRepository;
 import br.com.hotmart.company.repository.ProjectRepository;
 import br.com.hotmart.company.service.impl.DepartmentServiceImpl;
 import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
@@ -18,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -326,6 +326,19 @@ public class ProjectServiceImplTest {
     }
 
     @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionWhenProjectHasNoEmployees(){
+        Project project = new Project();
+        project.setId(1L);
+        project.setEmployees(new ArrayList<>());
+
+        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+
+        Long projectId = 1L;
+        Long employeeId = 1L;
+        projectService.unregisterEmployee(projectId, employeeId);
+    }
+
+    @Test(expected = RuntimeException.class)
     public void shouldThrowAnExceptionWhenEmployeeDontWorksInTheProject(){
         Project project = new Project();
         project.setId(1L);
@@ -333,12 +346,13 @@ public class ProjectServiceImplTest {
         Employee employee = new Employee();
         employee.setId(1L);
 
-        List<Employee> employees = new ArrayList<>();
+        Employee employeeToBeFounded = new Employee();
+        employee.setId(2L);
 
-        project.setEmployees(employees);
+        project.setEmployees(Arrays.asList(employee));
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employeeToBeFounded));
 
         Long projectId = 1L;
         Long employeeId = 1L;
