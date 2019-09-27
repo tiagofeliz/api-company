@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.entity.*;
@@ -13,8 +14,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -165,6 +168,189 @@ public class DepartmentServiceImplTest {
 
         assertEquals(1, departmentEmployees.size());
         assertEquals(employees.get(0).getId(), departmentEmployees.get(0).getId(), 0.00001);
+    }
+
+    @Test
+    public void shouldReturnAListOfBudgetsWithBudgetStatus(){
+        Employee employee = new Employee();
+        employee.setId(1L);
+
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee);
+
+        Department department = new Department();
+        department.setId(1L);
+
+        Budget budget = new Budget();
+        budget.setValue(6000);
+        budget.setStartDate(LocalDate.of(2019, 5, 1));
+        budget.setEndDate(LocalDate.of(2019, 5, 30));
+        budget.setDepartment(department);
+
+        List<Budget> budgets = new ArrayList<>();
+        budgets.add(budget);
+
+        Project project = new Project();
+        project.setId(1L);
+        project.setValue(2000);
+        project.setName("Similaridade entre textos");
+        project.setStartDate(LocalDate.of(2019, 5, 10));
+        project.setEndDate(LocalDate.of(2019, 5, 15));
+        project.setDepartment(department);
+        project.setEmployees(employees);
+
+        List<Project> projects = new ArrayList<>();
+        projects.add(project);
+
+        department.setProjects(projects);
+        department.setBudgets(budgets);
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
+
+        assertEquals(1, budgetStatusList.size());
+        assertEquals(BudgetStatus.GREEN, budgetStatusList.get(0).getStatus());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowAnExceptionInBudgetListWhenDepartmentIdIsInvalid(){
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+
+        departmentService.budgetStatus(1L);
+    }
+
+    @Test
+    public void shouldReturnAEmptyBudgetStatusDtoListWhenDepartmentHasNoBudgets(){
+        Department department = new Department();
+        department.setId(1L);
+        department.setBudgets(new ArrayList<>());
+        department.setProjects(new ArrayList<>());
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
+
+        assertTrue(budgetStatusList.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnAGREENStatusWhenDepartmentHasNoProjects(){
+        Department department = new Department();
+        department.setId(1L);
+
+        Budget budget = new Budget();
+        budget.setValue(6000);
+        budget.setStartDate(LocalDate.of(2019, 5, 1));
+        budget.setEndDate(LocalDate.of(2019, 5, 30));
+        budget.setDepartment(department);
+
+        department.setBudgets(Arrays.asList(budget));
+        department.setProjects(new ArrayList<>());
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
+
+        assertEquals(1, budgetStatusList.size());
+        assertEquals(BudgetStatus.GREEN, budgetStatusList.get(0).getStatus());
+        assertEquals(budget.getValue(), budgetStatusList.get(0).getValue(), 0.00001);
+        assertEquals(budget.getStartDate(), budgetStatusList.get(0).getStartDate());
+        assertEquals(budget.getEndDate(), budgetStatusList.get(0).getEndDate());
+    }
+
+    @Test
+    public void shouldReturnAGREENStatusWhenProjectsValueIsLessThanTheBudgetValue(){
+        Department department = new Department();
+        department.setId(1L);
+
+        Budget budget = new Budget();
+        budget.setValue(6000);
+        budget.setStartDate(LocalDate.of(2019, 5, 1));
+        budget.setEndDate(LocalDate.of(2019, 5, 30));
+        budget.setDepartment(department);
+
+        Project project = new Project();
+        project.setValue(2000);
+        project.setEmployees(Arrays.asList(new Employee()));
+        project.setStartDate(LocalDate.of(2019, 5, 10));
+        project.setEndDate(LocalDate.of(2019, 5, 15));
+
+        department.setBudgets(Arrays.asList(budget));
+        department.setProjects(Arrays.asList(project));
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
+
+        assertEquals(1, budgetStatusList.size());
+        assertEquals(BudgetStatus.GREEN, budgetStatusList.get(0).getStatus());
+        assertEquals(budget.getValue(), budgetStatusList.get(0).getValue(), 0.00001);
+        assertEquals(budget.getStartDate(), budgetStatusList.get(0).getStartDate());
+        assertEquals(budget.getEndDate(), budgetStatusList.get(0).getEndDate());
+    }
+
+    @Test
+    public void shouldReturnAYELLOWStatusWhenProjectsValueIsHigherThanTheBudgetValueAndLessThen10PercentTheBudgetsValue(){
+        Department department = new Department();
+        department.setId(1L);
+
+        Budget budget = new Budget();
+        budget.setValue(6000);
+        budget.setStartDate(LocalDate.of(2019, 5, 1));
+        budget.setEndDate(LocalDate.of(2019, 5, 30));
+        budget.setDepartment(department);
+
+        Project project = new Project();
+        project.setValue(6500);
+        project.setEmployees(Arrays.asList(new Employee()));
+        project.setStartDate(LocalDate.of(2019, 5, 10));
+        project.setEndDate(LocalDate.of(2019, 5, 15));
+
+        department.setBudgets(Arrays.asList(budget));
+        department.setProjects(Arrays.asList(project));
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
+
+        assertEquals(1, budgetStatusList.size());
+        assertEquals(BudgetStatus.YELLOW, budgetStatusList.get(0).getStatus());
+        assertEquals(budget.getValue(), budgetStatusList.get(0).getValue(), 0.00001);
+        assertEquals(budget.getStartDate(), budgetStatusList.get(0).getStartDate());
+        assertEquals(budget.getEndDate(), budgetStatusList.get(0).getEndDate());
+    }
+
+
+    @Test
+    public void shouldReturnAREDStatusWhenProjectsValueIsHigherThan10PercentTheBudgetsValue(){
+        Department department = new Department();
+        department.setId(1L);
+
+        Budget budget = new Budget();
+        budget.setValue(6000);
+        budget.setStartDate(LocalDate.of(2019, 5, 1));
+        budget.setEndDate(LocalDate.of(2019, 5, 30));
+        budget.setDepartment(department);
+
+        Project project = new Project();
+        project.setValue(6700);
+        project.setEmployees(Arrays.asList(new Employee()));
+        project.setStartDate(LocalDate.of(2019, 5, 10));
+        project.setEndDate(LocalDate.of(2019, 5, 15));
+
+        department.setBudgets(Arrays.asList(budget));
+        department.setProjects(Arrays.asList(project));
+
+        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
+
+        List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
+
+        assertEquals(1, budgetStatusList.size());
+        assertEquals(BudgetStatus.RED, budgetStatusList.get(0).getStatus());
+        assertEquals(budget.getValue(), budgetStatusList.get(0).getValue(), 0.00001);
+        assertEquals(budget.getStartDate(), budgetStatusList.get(0).getStartDate());
+        assertEquals(budget.getEndDate(), budgetStatusList.get(0).getEndDate());
     }
 
 }

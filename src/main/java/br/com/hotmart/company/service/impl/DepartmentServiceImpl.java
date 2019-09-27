@@ -1,17 +1,19 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
-import br.com.hotmart.company.model.entity.Department;
-import br.com.hotmart.company.model.entity.Employee;
+import br.com.hotmart.company.model.entity.*;
 import br.com.hotmart.company.repository.DepartmentRepository;
 import br.com.hotmart.company.repository.EmployeeRepository;
 import br.com.hotmart.company.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,6 +24,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    private static final Double YELLOW_LIMIT = 10D;
 
     @Override
     public List<DepartmentDto> findAll() {
@@ -62,6 +66,47 @@ public class DepartmentServiceImpl implements DepartmentService {
         Optional<Department> department = findBy(id);
         List<Employee> employees = employeeRepository.findByProjectsDepartment_Id(department.get().getId());
         return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BudgetStatusDto> budgetStatus(Long id) {
+        Optional<Department> department = findBy(id);
+        List<Budget> departmentBudgets = department.get().getBudgets();
+        List<Project> departmentProjects = department.get().getProjects();
+        List<BudgetStatusDto> budgetStatusList = new ArrayList<>();
+        departmentBudgets.forEach(budget -> {
+            List<Project> budgetProjects = filterProjectsByBudget(departmentProjects, budget);
+            Double sumOfProjectsValue = sumProjectsValueConsideringEmployeesSalary(budgetProjects);
+            BudgetStatus budgetStatus = statusFromBudget(budget.getValue(), sumOfProjectsValue);
+            budgetStatusList.add(new BudgetStatusDto(budget, budgetStatus));
+        });
+        return budgetStatusList;
+    }
+
+    private BudgetStatus statusFromBudget(Double budgetValue, Double sumOfProjectsValue) {
+        Double yellowLimit = budgetValue + (budgetValue * YELLOW_LIMIT) / 100;
+        if(sumOfProjectsValue <= budgetValue){
+            return BudgetStatus.GREEN;
+        }else if(sumOfProjectsValue <= yellowLimit){
+            return BudgetStatus.YELLOW;
+        }else{
+            return BudgetStatus.RED;
+        }
+    }
+
+    private Double sumProjectsValueConsideringEmployeesSalary(List<Project> projects) {
+        AtomicReference<Double> sumOfProjectsValue = new AtomicReference<>(0D);
+        projects.stream().forEach(project -> {
+            List<Double> employeeSalaryList = project.getEmployees().stream().map(Employee::getSalary).collect(Collectors.toList());
+            Double employeesSalarySum = employeeSalaryList.stream().reduce(0D, (salary1, salary2) -> salary1 + salary2);
+            Double finalProjectValue = employeesSalarySum + project.getValue();
+            sumOfProjectsValue.set(finalProjectValue);
+        });
+        return sumOfProjectsValue.get();
+    }
+
+    private List<Project> filterProjectsByBudget(List<Project> projects, Budget budget) {
+        return projects.stream().filter(project -> (project.getStartDate().isAfter(budget.getStartDate()) && project.getEndDate().isBefore(budget.getEndDate()))).collect(Collectors.toList());
     }
 
     private Optional<Department> findBy(Long id){

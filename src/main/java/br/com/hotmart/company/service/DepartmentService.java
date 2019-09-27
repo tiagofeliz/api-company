@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
@@ -16,5 +17,5 @@ public interface DepartmentService {
     DepartmentDto update(Department department, Long id);
     void delete(Long id);
     List<EmployeeDto> employees(Long id);
-//    List<ProjectDto> registerProject(Long departmentId, Long projectId);
+    List<BudgetStatusDto> budgetStatus(Long id);
 }

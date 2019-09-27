@@ -1,5 +1,6 @@
 package br.com.hotmart.company.controller;
 
+import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.entity.Department;
@@ -72,6 +73,15 @@ public class DepartmentController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(departmentEmployees);
+    }
+
+    @GetMapping("/{id}/budgetStatus")
+    public ResponseEntity<List<BudgetStatusDto>> budgetStatus(@PathVariable Long id){
+        List<BudgetStatusDto> departmentBudgetsStatus = departmentService.budgetStatus(id);
+        if(departmentBudgetsStatus.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(departmentBudgetsStatus);
     }
 
 }
