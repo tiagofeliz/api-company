@@ -101,15 +101,11 @@ public class ProjectServiceImplTest {
 
     @Test(expected = RuntimeException.class)
     public void shouldThrowAnExceptionWhenDepartmentIdIsInvalid(){
-        Department department = new Department();
-        department.setId(1L);
-
         Project project = new Project();
-        project.setDepartment(department);
 
         Mockito.when(departmentService.findById(1L)).thenReturn(Optional.empty());
 
-        projectService.create(project);
+        projectService.create(project, 1L);
     }
 
     @Test
@@ -128,7 +124,7 @@ public class ProjectServiceImplTest {
 
         Mockito.when(projectRepository.save(project)).thenReturn(project);
 
-        ProjectDto projectSaved = projectService.create(project);
+        ProjectDto projectSaved = projectService.create(project, 1L);
 
         assertEquals(project.getName(), projectSaved.getName());
         assertEquals(project.getValue(), projectSaved.getValue(), 0.00001);

@@ -42,8 +42,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDto create(Project project) {
-        Department department = getDepartment(project.getDepartment().getId());
+    public ProjectDto create(Project project, Long departmentId) {
+        Department department = getDepartment(departmentId);
         project.setDepartment(department);
         projectRepository.save(project);
         return new ProjectDto(project);

@@ -18,8 +18,7 @@ public class ProjectForm {
     private double value;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Department department;
-
+    @NotNull
     private Long idDepartment;
 
     public Project toEntity(){
@@ -28,11 +27,7 @@ public class ProjectForm {
         project.setValue(this.value);
         project.setStartDate(this.startDate);
         project.setEndDate(this.endDate);
-        if(this.idDepartment != null) {
-            Department department = new Department();
-            department.setId(this.idDepartment);
-            project.setDepartment(department);
-        }else{
+        if(this.idDepartment == null) {
             throw new IllegalArgumentException("Department id is required");
         }
         return project;

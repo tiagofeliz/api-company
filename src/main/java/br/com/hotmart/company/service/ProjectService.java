@@ -11,7 +11,7 @@ public interface ProjectService {
 
     List<ProjectDto> findAll();
     Optional<ProjectDto> findById(Long id);
-    ProjectDto create(Project project);
+    ProjectDto create(Project project, Long departmentId);
     ProjectDto update(Project project, Long id);
     void delete(Long id);
     List<EmployeeDto> registerEmployee(Long projectId, Long employeeId);

@@ -46,7 +46,7 @@ public class ProjectController {
     @Transactional
     public ResponseEntity<ProjectDto> store(@RequestBody @Valid ProjectForm form, UriComponentsBuilder uriBuilder){
         Project project = form.toEntity();
-        ProjectDto dto = projectService.create(project);
+        ProjectDto dto = projectService.create(project, form.getIdDepartment());
 
         URI uri = uriBuilder.path("/employee/{id}").buildAndExpand(dto.getId()).toUri();
         return ResponseEntity.created(uri).body(dto);

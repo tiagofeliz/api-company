@@ -3,6 +3,7 @@ package br.com.hotmart.company.model.dto;
 import br.com.hotmart.company.model.entity.Budget;
 import br.com.hotmart.company.model.entity.Department;
 import br.com.hotmart.company.model.entity.Project;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +15,9 @@ public class DepartmentDto {
 
     private Long id;
     private String name;
+    @JsonIgnore
     private List<Project> projects;
+    @JsonIgnore
     private List<Budget> budgets;
 
     public DepartmentDto(Department department){
