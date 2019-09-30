@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -261,6 +262,44 @@ public class EmployeeServiceImplTest {
         Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
 
         employeeService.projects(1L);
+    }
+
+    @Test
+    public void shouldReturnAListOfEmployeesByName(){
+        Address address = new Address(
+                "Brasil",
+                "MG",
+                "BH",
+                "Entre Rios",
+                "30710-080");
+
+        Employee tiago = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                address,
+                null);
+
+        Employee capitu = new Employee(
+                "Capitolina",
+                "063.620.145-70",
+                LocalDate.of(2000, 5, 30),
+                1000.0,
+                Gender.FEMALE,
+                address,
+                null);
+
+        List<Employee> employeeList = Arrays.asList(tiago);
+        //findByName
+        String employeesName = "Tiago";
+        Mockito.when(employeeRepository.findByName(employeesName)).thenReturn(employeeList);
+
+        List<EmployeeDto> employeeDtoList = employeeService.findByName(employeesName);
+
+        assertEquals(1, employeeDtoList.size());
+        assertEquals(tiago.getName(), employeeDtoList.get(0).getName());
     }
 
 }

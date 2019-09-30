@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface EmployeeService {
 
     List<EmployeeDto> findAll();
+    List<EmployeeDto> findByName(String name);
     Optional<EmployeeDto> findById(Long id);
     EmployeeDto create(Employee employee);
     EmployeeDto update(Employee employee, Long id);
