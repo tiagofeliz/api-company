@@ -53,6 +53,10 @@ public class AddressServiceImplTest {
 
         assertEquals(1, addresses.size());
         assertEquals(address.getStreet(), addresses.get(0).getStreet());
+        assertEquals(address.getCity(), addresses.get(0).getCity());
+        assertEquals(address.getUf(), addresses.get(0).getUf());
+        assertEquals(address.getCountry(), addresses.get(0).getCountry());
+        assertEquals(address.getZipCode(), addresses.get(0).getZipCode());
     }
 
     @Test
@@ -64,6 +68,10 @@ public class AddressServiceImplTest {
         AddressDto savedAddress = addressService.create(address);
 
         assertEquals(address.getStreet(), savedAddress.getStreet());
+        assertEquals(address.getCountry(), savedAddress.getCountry());
+        assertEquals(address.getUf(), savedAddress.getUf());
+        assertEquals(address.getCity(), savedAddress.getCity());
+        assertEquals(address.getZipCode(), savedAddress.getZipCode());
     }
 
     @Test(expected = RuntimeException.class)
@@ -83,6 +91,10 @@ public class AddressServiceImplTest {
         AddressDto updatedAddress = addressService.update(updateTo, 1L);
 
         assertEquals(updateTo.getStreet(), updatedAddress.getStreet());
+        assertEquals(updateTo.getCountry(), updatedAddress.getCountry());
+        assertEquals(updateTo.getUf(), updatedAddress.getUf());
+        assertEquals(updateTo.getCity(), updatedAddress.getCity());
+        assertEquals(updateTo.getZipCode(), updatedAddress.getZipCode());
     }
 
     @Test

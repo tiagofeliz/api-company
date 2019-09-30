@@ -49,6 +49,7 @@ public class AddressServiceImpl implements AddressService {
         currentAddress.setZipCode(toSaveAddress.getZipCode());
     }
 
+    @Override
     public Optional<AddressDto> findById(Long id) {
         Optional<Address> addressOptional = addressRepository.findById(id);
         return addressOptional.map(AddressDto::new);
