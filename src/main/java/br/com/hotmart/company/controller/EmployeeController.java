@@ -32,6 +32,15 @@ public class EmployeeController {
         return ResponseEntity.ok(employees);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<EmployeeDto>> findByName(@RequestParam String name){
+        List<EmployeeDto> employees = employeeService.findByName(name);
+        if(employees.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(employees);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDto> show(@PathVariable Long id){
         Optional<EmployeeDto> employee = employeeService.findById(id);

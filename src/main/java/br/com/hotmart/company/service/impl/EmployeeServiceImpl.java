@@ -33,6 +33,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<EmployeeDto> findByName(String name) {
+        List<Employee> employees = employeeRepository.findByName(name);
+        return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<EmployeeDto> findById(Long id) {
         Optional<Employee> employee = employeeRepository.findById(id);
         return employee.map(EmployeeDto::new);
