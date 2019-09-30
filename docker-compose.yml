@@ -2,12 +2,35 @@ version: '3'
 services:
   db:
     container_name: db
-    image: mysql/mysql-server:5.7
+    image: mysql/mysql-server:8.0.17
     restart: unless-stopped
     tty: true
     environment:
+      SERVICE_NAME: db
       MYSQL_DATABASE: company
       MYSQL_ROOT_PASSWORD: company
       MYSQL_ROOT_HOST: '%'
     ports:
       - "3306:3306"
+    networks:
+      - backend
+
+  app:
+    build:
+      context: .
+    image: hotmart/company
+    container_name: app
+    depends_on:
+      - db
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+    ports:
+      - "8081:8080"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
