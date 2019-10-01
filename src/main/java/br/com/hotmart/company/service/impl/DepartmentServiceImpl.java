@@ -11,6 +11,7 @@ import br.com.hotmart.company.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,11 +78,19 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<BudgetStatusDto> budgetStatusList = new ArrayList<>();
         departmentBudgets.forEach(budget -> {
             List<Project> budgetProjects = filterProjectsByBudget(departmentProjects, budget);
-            Double sumOfProjectsValue = sumProjectsValueConsideringEmployeesSalary(budgetProjects);
+            int monthsQuantityInPeriod = monthAmount(budget);
+            Double sumOfProjectsValue = sumProjectsValueConsideringEmployeesSalary(id, budgetProjects, monthsQuantityInPeriod);
             BudgetStatus budgetStatus = statusFromBudget(budget.getValue(), sumOfProjectsValue);
             budgetStatusList.add(new BudgetStatusDto(budget, budgetStatus));
         });
         return budgetStatusList;
+    }
+
+    private int monthAmount(Budget budget) {
+        Period diff = Period.between(
+                budget.getStartDate().withDayOfMonth(1),
+                budget.getEndDate().withDayOfMonth(1));
+        return diff.getMonths();
     }
 
     @Override
@@ -101,15 +110,15 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
     }
 
-    private Double sumProjectsValueConsideringEmployeesSalary(List<Project> projects) {
-        AtomicReference<Double> sumOfProjectsValue = new AtomicReference<>(0D);
-        projects.forEach(project -> {
-            List<Double> employeeSalaryList = project.getEmployees().stream().map(Employee::getSalary).collect(Collectors.toList());
-            Double employeesSalarySum = employeeSalaryList.stream().reduce(0D, Double::sum);
-            Double finalProjectValue = employeesSalarySum + project.getValue();
-            sumOfProjectsValue.set(finalProjectValue);
-        });
-        return sumOfProjectsValue.get();
+    private Double sumProjectsValueConsideringEmployeesSalary(Long departmentId, List<Project> budgetProjects, int monthsQuantityInPeriod) {
+        if(budgetProjects.isEmpty()) return 0D;
+        List<Employee> departmentEmployees = employeeRepository.findByProjectsDepartment_Id(departmentId);
+        List<Double> employeeSalaryList = departmentEmployees.stream().map(Employee::getSalary).collect(Collectors.toList());
+        Double employeesSalarySum = employeeSalaryList.stream().reduce(0D, Double::sum);
+        employeesSalarySum = employeesSalarySum * monthsQuantityInPeriod;
+        List<Double> projectValueList = budgetProjects.stream().map(Project::getValue).collect(Collectors.toList());
+        Double projectValueSum = projectValueList.stream().reduce(0D, Double::sum);
+        return employeesSalarySum + projectValueSum;
     }
 
     private List<Project> filterProjectsByBudget(List<Project> projects, Budget budget) {
