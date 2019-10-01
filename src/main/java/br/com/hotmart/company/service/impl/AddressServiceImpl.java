@@ -22,7 +22,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public List<AddressDto> findAll() {
         List<Address> addresses = addressRepository.findAll();
-        return addresses.stream().map(AddressDto::new).collect(Collectors.toList());
+        return AddressDto.asList(addresses);
     }
 
     @Override

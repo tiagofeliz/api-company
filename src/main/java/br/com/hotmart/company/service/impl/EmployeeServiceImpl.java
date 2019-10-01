@@ -29,13 +29,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeDto> findAll() {
         List<Employee> employees = employeeRepository.findAll();
-        return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+        return EmployeeDto.asList(employees);
     }
 
     @Override
     public List<EmployeeDto> findByName(String name) {
         List<Employee> employees = employeeRepository.findByName(name);
-        return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+        return EmployeeDto.asList(employees);
     }
 
     @Override
@@ -89,14 +89,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeDto> supervisedEmployees(Long idSupervisor) {
         List<Employee> employees = employeeRepository.findBySupervisor_Id(idSupervisor);
-        return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+        return EmployeeDto.asList(employees);
     }
 
     @Override
     public List<ProjectDto> projects(Long id) {
         Optional<Employee> employee = findBy(id);
         List<Project> projects = projectRepository.findByEmployees_Id(employee.get().getId());
-        return projects.stream().map(ProjectDto::new).collect(Collectors.toList());
+        return ProjectDto.asList(projects);
     }
 
     public Optional<Employee> findBy(Long id){ // TODO refactor public method to private

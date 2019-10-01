@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -29,6 +31,10 @@ public class EmployeeDto {
         this.gender = employee.getGender();
         this.address = new AddressDto(employee.getAddress());
         this.supervisor = employee.getSupervisor();
+    }
+
+    public static List<EmployeeDto> asList(List<Employee> employeeList){
+        return employeeList.stream().map(EmployeeDto::new).collect(Collectors.toList());
     }
 
 }

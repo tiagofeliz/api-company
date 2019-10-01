@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -34,5 +35,9 @@ public class DepartmentDto {
         department.setBudgets(this.budgets);
         department.setProjects(this.projects);
         return department;
+    }
+
+    public static List<DepartmentDto> asList(List<Department> departmentList){
+        return departmentList.stream().map(DepartmentDto::new).collect(Collectors.toList());
     }
 }

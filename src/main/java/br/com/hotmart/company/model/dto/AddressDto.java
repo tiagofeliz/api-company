@@ -4,6 +4,9 @@ import br.com.hotmart.company.model.entity.Address;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Data
 @NoArgsConstructor
 public class AddressDto {
@@ -22,6 +25,10 @@ public class AddressDto {
         this.city = address.getCity();
         this.street = address.getStreet();
         this.zipCode = address.getZipCode();
+    }
+
+    public static List<AddressDto> asList(List<Address> addressList){
+        return addressList.stream().map(AddressDto::new).collect(Collectors.toList());
     }
 
 }

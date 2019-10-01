@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -26,6 +27,10 @@ public class ProjectDto {
         this.startDate = project.getStartDate();
         this.endDate = project.getEndDate();
         this.employees = project.getEmployees();
+    }
+
+    public static List<ProjectDto> asList(List<Project> projectList){
+        return projectList.stream().map(ProjectDto::new).collect(Collectors.toList());
     }
 
 }
