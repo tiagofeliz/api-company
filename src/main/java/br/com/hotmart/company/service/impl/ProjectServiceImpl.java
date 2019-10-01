@@ -32,7 +32,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectDto> findAll() {
         List<Project> projects = projectRepository.findAll();
-        return projects.stream().map(ProjectDto::new).collect(Collectors.toList());
+        return ProjectDto.asList(projects);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ProjectServiceImpl implements ProjectService {
         Optional<Project> project = findBy(projectId);
         Optional<Employee> employee = employeeService.findBy(employeeId); // TODO refactor public method to private
         register(project, employee);
-        return project.get().getEmployees().stream().map(EmployeeDto::new).collect(Collectors.toList());
+        return EmployeeDto.asList(project.get().getEmployees());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
         Optional<Project> project = findBy(projectId);
         Optional<Employee> employee = employeeService.findBy(employeeId); // TODO refactor public method to private
         unregister(project, employee);
-        return project.get().getEmployees().stream().map(EmployeeDto::new).collect(Collectors.toList());
+        return EmployeeDto.asList(project.get().getEmployees());
     }
 
     private void register(Optional<Project> project, Optional<Employee> employee) {

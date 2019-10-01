@@ -32,7 +32,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<DepartmentDto> findAll() {
         List<Department> departments = departmentRepository.findAll();
-        return departments.stream().map(DepartmentDto::new).collect(Collectors.toList());
+        return DepartmentDto.asList(departments);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<ProjectDto> projects(Long id) {
         Optional<Department> department = findBy(id);
-        return department.get().getProjects().stream().map(ProjectDto::new).collect(Collectors.toList());
+        return ProjectDto.asList(department.get().getProjects());
     }
 
     private BudgetStatus statusFromBudget(Double budgetValue, Double sumOfProjectsValue) {
