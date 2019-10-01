@@ -12,6 +12,8 @@ services:
       MYSQL_ROOT_HOST: '%'
     ports:
       - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
     networks:
       - backend
 
@@ -34,3 +36,7 @@ services:
 networks:
   backend:
     driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
