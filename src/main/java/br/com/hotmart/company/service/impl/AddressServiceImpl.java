@@ -31,14 +31,10 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public AddressDto update(Address address, Long id) {
-        Optional<Address> addressOptional = addressRepository.findById(id);
-        if(addressOptional.isPresent()) {
-            save(addressOptional.get(), address);
-            return new AddressDto(addressOptional.get());
-        }else{
-            throw new RuntimeException("Address not found");
-        }
+    public AddressDto update(Address updateTo, Long id) {
+        Address address = findBy(id);
+        save(address, updateTo);
+        return new AddressDto(address);
     }
 
     public void save(Address currentAddress, Address toSaveAddress) {
@@ -53,5 +49,13 @@ public class AddressServiceImpl implements AddressService {
     public Optional<AddressDto> findById(Long id) {
         Optional<Address> addressOptional = addressRepository.findById(id);
         return addressOptional.map(AddressDto::new);
+    }
+
+    private Address findBy(Long id){
+        Optional<Address> addressOptional = addressRepository.findById(id);
+        if(!addressOptional.isPresent()){
+            throw new RuntimeException("Address not found");
+        }
+        return addressOptional.get();
     }
 }

@@ -41,14 +41,10 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     @Override
-    public BudgetDto update(Budget budget, Long id) {
-        Optional<Budget> budgetOptional = budgetRepository.findById(id);
-        if(budgetOptional.isPresent()) {
-            save(budgetOptional.get(), budget);
-            return new BudgetDto(budgetOptional.get());
-        }else{
-            throw new RuntimeException("Budget not found");
-        }
+    public BudgetDto update(Budget updateTo, Long id) {
+        Budget budget = findBy(id);
+        save(budget, updateTo);
+        return new BudgetDto(budget);
     }
 
     private void save(Budget currentBudget, Budget updateTo) {
@@ -59,11 +55,16 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public void delete(Long id) {
-        Optional<Budget> budget = budgetRepository.findById(id);
-        if(budget.isPresent()) {
-            budgetRepository.delete(budget.get());
-        }else{
+        Budget budget = findBy(id);
+        budgetRepository.delete(budget);
+    }
+
+    private Budget findBy(Long id){
+        Optional<Budget> budgetOptional = budgetRepository.findById(id);
+        if(!budgetOptional.isPresent()) {
             throw new RuntimeException("Budget not found");
+        }else{
+            return budgetOptional.get();
         }
     }
 }

@@ -188,7 +188,7 @@ public class ProjectServiceImplTest {
         employee.setId(1L);
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
 
         Long projectId = 1L;
         Long employeeId = 1L;
@@ -241,7 +241,7 @@ public class ProjectServiceImplTest {
         employee.setId(1L);
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
 
         Long projectId = 1L;
         Long employeeId = 1L;
@@ -270,7 +270,7 @@ public class ProjectServiceImplTest {
         project.setId(1L);
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.empty());
+        Mockito.when(employeeService.findBy(1L)).thenReturn(null);
 
         Long projectId = 1L;
         Long employeeId = 1L;
@@ -291,7 +291,7 @@ public class ProjectServiceImplTest {
         project.setEmployees(employees);
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
 
         Long projectId = 1L;
         Long employeeId = 1L;
@@ -312,7 +312,7 @@ public class ProjectServiceImplTest {
         project.setEmployees(employees);
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
 
         Long projectId = 1L;
         Long employeeId = 1L;
@@ -348,7 +348,7 @@ public class ProjectServiceImplTest {
         project.setEmployees(Arrays.asList(employee));
 
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(Optional.of(employeeToBeFounded));
+        Mockito.when(employeeService.findBy(1L)).thenReturn(employeeToBeFounded);
 
         Long projectId = 1L;
         Long employeeId = 1L;
