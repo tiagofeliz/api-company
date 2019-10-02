@@ -15,7 +15,6 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Component
@@ -66,7 +65,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public List<EmployeeDto> employees(Long id) {
         Department department = findBy(id);
-        List<Employee> employees = employeeRepository.findByProjectsDepartment_Id(department.getId());
+        List<Employee> employees = employeeRepository.findByProjectsDepartmentId(department.getId());
         return EmployeeDto.asList(employees);
     }
 
@@ -111,7 +110,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     private Double sumProjectsValueConsideringEmployeesSalary(Long departmentId, List<Project> budgetProjects, int monthsQuantityInPeriod) {
-        List<Employee> departmentEmployees = employeeRepository.findByProjectsDepartment_Id(departmentId);
+        List<Employee> departmentEmployees = employeeRepository.findByProjectsDepartmentId(departmentId);
         Double employeesSalarySum = departmentEmployees.stream().mapToDouble(Employee::getSalary).sum();
         employeesSalarySum = employeesSalarySum * monthsQuantityInPeriod;
         Double projectValueSum = budgetProjects.stream().mapToDouble(Project::getValue).sum();

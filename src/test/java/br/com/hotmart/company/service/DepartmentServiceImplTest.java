@@ -162,7 +162,7 @@ public class DepartmentServiceImplTest {
         department.setProjects(projects);
 
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
-        Mockito.when(employeeRepository.findByProjectsDepartment_Id(1L)).thenReturn(employees);
+        Mockito.when(employeeRepository.findByProjectsDepartmentId(1L)).thenReturn(employees);
 
         List<EmployeeDto> departmentEmployees = departmentService.employees(1L);
 
