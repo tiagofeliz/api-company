@@ -22,8 +22,8 @@ public class Project {
     private LocalDate endDate;
     @ManyToMany
     @JoinTable(name = "employee_project",
-            joinColumns = { @JoinColumn(name = "employee_id") },
-            inverseJoinColumns = { @JoinColumn(name = "project_id") })
+            joinColumns = { @JoinColumn(name = "project_id") },
+            inverseJoinColumns = { @JoinColumn(name = "employee_id") })
     private List<Employee> employees;
     @ManyToOne
     @JsonIgnore
