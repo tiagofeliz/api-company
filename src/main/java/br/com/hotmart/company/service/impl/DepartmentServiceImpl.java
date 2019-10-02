@@ -111,7 +111,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     private Double sumProjectsValueConsideringEmployeesSalary(Long departmentId, List<Project> budgetProjects, int monthsQuantityInPeriod) {
-        if(budgetProjects.isEmpty()) return 0D;
         List<Employee> departmentEmployees = employeeRepository.findByProjectsDepartment_Id(departmentId);
         List<Double> employeeSalaryList = departmentEmployees.stream().map(Employee::getSalary).collect(Collectors.toList());
         Double employeesSalarySum = employeeSalaryList.stream().reduce(0D, Double::sum);
