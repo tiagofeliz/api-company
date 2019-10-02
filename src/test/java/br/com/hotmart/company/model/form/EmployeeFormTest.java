@@ -4,10 +4,9 @@ import br.com.hotmart.company.model.entity.Employee;
 import br.com.hotmart.company.model.entity.Gender;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.time.LocalDate;
+
+import static org.junit.Assert.assertEquals;
 
 public class EmployeeFormTest {
 
@@ -21,7 +20,7 @@ public class EmployeeFormTest {
         form.setCpf("063.620.145-70");
         form.setIdSupervisor(1L);
 
-        Employee employee = form.toEntity();
+        form.toEntity();
     }
 
     @Test
