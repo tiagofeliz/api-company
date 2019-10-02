@@ -47,10 +47,10 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public DepartmentDto update(Department department, Long id) {
-        Optional<Department> departmentOptional = findBy(id);
-        save(departmentOptional.get(), department);
-        return new DepartmentDto(departmentOptional.get());
+    public DepartmentDto update(Department updateTo, Long id) {
+        Department department = findBy(id);
+        save(department, updateTo);
+        return new DepartmentDto(department);
     }
 
     private void save(Department currentDepartment, Department updateTo){
@@ -59,27 +59,27 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void delete(Long id) {
-        Optional<Department> department = findBy(id);
-        departmentRepository.delete(department.get());
+        Department department = findBy(id);
+        departmentRepository.delete(department);
     }
 
     @Override
     public List<EmployeeDto> employees(Long id) {
-        Optional<Department> department = findBy(id);
-        List<Employee> employees = employeeRepository.findByProjectsDepartment_Id(department.get().getId());
+        Department department = findBy(id);
+        List<Employee> employees = employeeRepository.findByProjectsDepartment_Id(department.getId());
         return EmployeeDto.asList(employees);
     }
 
     @Override
     public List<BudgetStatusDto> budgetStatus(Long id) {
-        Optional<Department> department = findBy(id);
-        List<Budget> departmentBudgets = department.get().getBudgets();
-        List<Project> departmentProjects = department.get().getProjects();
+        Department department = findBy(id);
+        List<Budget> departmentBudgets = department.getBudgets();
+        List<Project> departmentProjects = department.getProjects();
         List<BudgetStatusDto> budgetStatusList = new ArrayList<>();
         departmentBudgets.forEach(budget -> {
             List<Project> budgetProjects = filterProjectsByBudget(departmentProjects, budget);
             int monthsQuantityInPeriod = monthAmount(budget);
-            Double sumOfProjectsValue = sumProjectsValueConsideringEmployeesSalary(department.get().getId(), budgetProjects, monthsQuantityInPeriod);
+            Double sumOfProjectsValue = sumProjectsValueConsideringEmployeesSalary(department.getId(), budgetProjects, monthsQuantityInPeriod);
             BudgetStatus budgetStatus = statusFromBudget(budget.getValue(), sumOfProjectsValue);
             budgetStatusList.add(new BudgetStatusDto(budget, budgetStatus));
         });
@@ -95,8 +95,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<ProjectDto> projects(Long id) {
-        Optional<Department> department = findBy(id);
-        return ProjectDto.asList(department.get().getProjects());
+        Department department = findBy(id);
+        return ProjectDto.asList(department.getProjects());
     }
 
     private BudgetStatus statusFromBudget(Double budgetValue, Double sumOfProjectsValue) {
@@ -122,11 +122,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         return projects.stream().filter(project -> (project.getStartDate().isAfter(budget.getStartDate()) && project.getEndDate().isBefore(budget.getEndDate()))).collect(Collectors.toList());
     }
 
-    private Optional<Department> findBy(Long id){
+    private Department findBy(Long id){
         Optional<Department> department = departmentRepository.findById(id);
         if(!department.isPresent()){
             throw new RuntimeException("Department not found");
         }
-        return department;
+        return department.get();
     }
 }

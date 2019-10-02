@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class EmployeeServiceImpl implements EmployeeService {
@@ -52,12 +51,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDto update(Employee employee, Long id) {
-        Optional<Employee> employeeOptional = findBy(id);
-        setEmployeeSupervisor(employee);
-        save(employeeOptional.get(), employee);
-        addressService.save(employeeOptional.get().getAddress(), employee.getAddress());
-        return new EmployeeDto(employeeOptional.get());
+    public EmployeeDto update(Employee updateTo, Long id) {
+        Employee employee = findBy(id);
+        setEmployeeSupervisor(updateTo);
+        save(employee, updateTo);
+        addressService.save(employee.getAddress(), updateTo.getAddress());
+        return new EmployeeDto(employee);
     }
 
     private void setEmployeeSupervisor(Employee employee) {
@@ -82,8 +81,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void delete(Long id) {
-        Optional<Employee> employee = findBy(id);
-        employeeRepository.delete(employee.get());
+        Employee employee = findBy(id);
+        employeeRepository.delete(employee);
     }
 
     @Override
@@ -94,16 +93,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<ProjectDto> projects(Long id) {
-        Optional<Employee> employee = findBy(id);
-        List<Project> projects = projectRepository.findByEmployees_Id(employee.get().getId());
+        Employee employee = findBy(id);
+        List<Project> projects = projectRepository.findByEmployees_Id(employee.getId());
         return ProjectDto.asList(projects);
     }
 
-    public Optional<Employee> findBy(Long id){ // TODO refactor public method to private
+    public Employee findBy(Long id){ // TODO refactor public method to private
         Optional<Employee> employee = employeeRepository.findById(id);
         if(!employee.isPresent()){
             throw new RuntimeException("Employee not found");
         }
-        return employee;
+        return employee.get();
     }
 }
