@@ -67,7 +67,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     public List<EmployeeDto> employees(Long id) {
         Optional<Department> department = findBy(id);
         List<Employee> employees = employeeRepository.findByProjectsDepartment_Id(department.get().getId());
-        return employees.stream().map(EmployeeDto::new).collect(Collectors.toList());
+        return EmployeeDto.asList(employees);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentBudgets.forEach(budget -> {
             List<Project> budgetProjects = filterProjectsByBudget(departmentProjects, budget);
             int monthsQuantityInPeriod = monthAmount(budget);
-            Double sumOfProjectsValue = sumProjectsValueConsideringEmployeesSalary(id, budgetProjects, monthsQuantityInPeriod);
+            Double sumOfProjectsValue = sumProjectsValueConsideringEmployeesSalary(department.get().getId(), budgetProjects, monthsQuantityInPeriod);
             BudgetStatus budgetStatus = statusFromBudget(budget.getValue(), sumOfProjectsValue);
             budgetStatusList.add(new BudgetStatusDto(budget, budgetStatus));
         });
@@ -112,11 +112,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private Double sumProjectsValueConsideringEmployeesSalary(Long departmentId, List<Project> budgetProjects, int monthsQuantityInPeriod) {
         List<Employee> departmentEmployees = employeeRepository.findByProjectsDepartment_Id(departmentId);
-        List<Double> employeeSalaryList = departmentEmployees.stream().map(Employee::getSalary).collect(Collectors.toList());
-        Double employeesSalarySum = employeeSalaryList.stream().reduce(0D, Double::sum);
+        Double employeesSalarySum = departmentEmployees.stream().mapToDouble(Employee::getSalary).sum();
         employeesSalarySum = employeesSalarySum * monthsQuantityInPeriod;
-        List<Double> projectValueList = budgetProjects.stream().map(Project::getValue).collect(Collectors.toList());
-        Double projectValueSum = projectValueList.stream().reduce(0D, Double::sum);
+        Double projectValueSum = budgetProjects.stream().mapToDouble(Project::getValue).sum();
         return employeesSalarySum + projectValueSum;
     }
 
