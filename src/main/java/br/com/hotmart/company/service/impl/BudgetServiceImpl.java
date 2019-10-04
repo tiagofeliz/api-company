@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.BudgetDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.entity.Budget;
@@ -35,13 +36,16 @@ public class BudgetServiceImpl implements BudgetService {
     private Department getDepartment(Long id) {
         Optional<DepartmentDto> departmentDto = departmentService.findById(id);
         if(!departmentDto.isPresent()){
-            throw new RuntimeException("Budget's department not found");
+            throw new ResourceNotFoundException("Budget's department not found");
         }
         return departmentDto.get().toEntity();
     }
 
     @Override
     public BudgetDto update(Budget updateTo, Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Budget not found");
+        }
         Budget budget = findBy(id);
         save(budget, updateTo);
         return new BudgetDto(budget);
@@ -55,16 +59,18 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Override
     public void delete(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Budget not found");
+        }
         Budget budget = findBy(id);
         budgetRepository.delete(budget);
     }
 
+    private boolean exists(Long id){
+        return budgetRepository.existsById(id);
+    }
+
     private Budget findBy(Long id){
-        Optional<Budget> budgetOptional = budgetRepository.findById(id);
-        if(!budgetOptional.isPresent()) {
-            throw new RuntimeException("Budget not found");
-        }else{
-            return budgetOptional.get();
-        }
+        return budgetRepository.findById(id).get();
     }
 }

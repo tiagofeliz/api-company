@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Address;
@@ -10,6 +11,7 @@ import br.com.hotmart.company.repository.EmployeeRepository;
 import br.com.hotmart.company.repository.ProjectRepository;
 import br.com.hotmart.company.service.impl.AddressServiceImpl;
 import br.com.hotmart.company.service.impl.EmployeeServiceImpl;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,10 +38,33 @@ public class EmployeeServiceImplTest {
     private EmployeeRepository employeeRepository;
 
     @Mock
-    private AddressServiceImpl addressService;
+    private ProjectRepository projectRepository;
 
     @Mock
-    private ProjectRepository projectRepository;
+    private AddressServiceImpl addressService;
+
+    private Address address;
+
+    private Employee employee;
+
+    @Before
+    public void setup() {
+        this.address = new Address(
+                "Brasil",
+                "MG",
+                "BH",
+                "Entre Rios",
+                "30710-080");
+
+        this.employee = new Employee(
+                "Tiago Feliz",
+                "063.620.145-70",
+                LocalDate.of(1996, 5, 30),
+                1000.0,
+                Gender.MALE,
+                this.address,
+                null);
+    }
 
     @Test
     public void shouldReturnAEmptyListWhenThereNoAreRecords(){
@@ -52,24 +77,8 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void shouldReturnAListOfEmployeesWhenThereAreRecords(){
-        Address address = new Address(
-                "Brasil",
-                "MG",
-                "BH",
-                "Entre Rios",
-                "30710-080");
-
-        Employee employee = new Employee(
-                "Tiago Feliz",
-                "063.620.145-70",
-                LocalDate.of(1996, 5, 30),
-                1000.0,
-                Gender.MALE,
-                address,
-                null);
-
         List<Employee> employeeList = new ArrayList<>();
-        employeeList.add(employee);
+        employeeList.add(this.employee);
 
         Mockito.when(employeeRepository.findAll()).thenReturn(employeeList);
         List<EmployeeDto> employees = employeeService.findAll();
@@ -80,28 +89,17 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void shouldReturnAEmployee(){
-        Address address = new Address(
-                "Brasil",
-                "MG",
-                "BH",
-                "Entre Rios",
-                "30710-080");
+        this.employee.setId(1L);
 
-        Employee employee = new Employee(
-                "Tiago Feliz",
-                "063.620.145-70",
-                LocalDate.of(1996, 5, 30),
-                1000.0,
-                Gender.MALE,
-                address,
-                null);
-        employee.setId(1L);
-
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(this.employee));
 
         Optional<EmployeeDto> newEmployee = employeeService.findById(1L);
 
-        assertEquals(employee.getName(), newEmployee.get().getName());
+        assertEquals(this.employee.getName(), newEmployee.get().getName());
+        assertEquals(this.employee.getGender(), newEmployee.get().getGender());
+        assertEquals(this.employee.getBirthDate(), newEmployee.get().getBirthDate());
+        assertEquals(this.employee.getCpf(), newEmployee.get().getCpf());
+        assertEquals(this.employee.getSalary(), newEmployee.get().getSalary(), 0.000001);
     }
 
     @Test
@@ -113,46 +111,28 @@ public class EmployeeServiceImplTest {
         assertEquals(Optional.empty(), employee);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExecptionWhenSupervisorIdIsInvalid(){
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(employeeRepository.existsById(1L)).thenReturn(false);
 
         Employee supervisor = new Employee();
         supervisor.setId(1L);
 
-        Employee employee = new Employee();
-        employee.setSupervisor(supervisor);
+        this.employee.setSupervisor(supervisor);
 
-        employeeService.create(employee);
+        employeeService.create(this.employee);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExecptionWhenEmployeesOnUpdateIdIsInvalid(){
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(employeeRepository.existsById(1L)).thenReturn(false);
 
-        Employee employee = new Employee();
-
-        employeeService.update(employee, 1L);
+        employeeService.update(this.employee, 1L);
     }
 
     @Test
     public void shouldUpdateAEmployee(){
-        Address address = new Address(
-                "Brasil",
-                "MG",
-                "BH",
-                "Entre Rios",
-                "30710-080");
-
-        Employee currentEmployee = new Employee(
-                "Tiago Feliz",
-                "063.620.145-70",
-                LocalDate.of(1996, 5, 30),
-                1000.0,
-                Gender.MALE,
-                address,
-                null);
-        currentEmployee.setId(1L);
+        this.employee.setId(1L);
 
         Employee updateTo = new Employee(
                 "Tiago Triste",
@@ -160,65 +140,51 @@ public class EmployeeServiceImplTest {
                 LocalDate.of(1996, 5, 30),
                 1000.0,
                 Gender.MALE,
-                address,
+                this.address,
                 null);
 
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(currentEmployee));
+        Mockito.when(employeeRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(this.employee));
 
         EmployeeDto updatedEmployee = employeeService.update(updateTo, 1L);
 
         assertEquals(updateTo.getName(), updatedEmployee.getName());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExecptionWhenEmployeesOnShowIdIsInvalid(){
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(employeeRepository.existsById(1L)).thenReturn(false);
 
         employeeService.delete(1L);
     }
 
     @Test
     public void shouldReturnAListOfSupervisedEmployees(){
-        Address address = new Address(
-                "Brasil",
-                "MG",
-                "BH",
-                "Entre Rios",
-                "30710-080");
-
         Employee supervisor = new Employee(
                 "Tiago Feliz",
                 "063.620.145-70",
                 LocalDate.of(1996, 5, 30),
                 1000.0,
                 Gender.MALE,
-                address,
+                this.address,
                 null);
         supervisor.setId(1L);
-
-        Employee employee = new Employee(
-                "Tiago Feliz",
-                "063.620.145-70",
-                LocalDate.of(1996, 5, 30),
-                1000.0,
-                Gender.MALE,
-                address,
-                supervisor);
+        this.employee.setSupervisor(supervisor);
 
         List<Employee> employees = new ArrayList<>();
-        employees.add(employee);
+        employees.add(this.employee);
 
         Mockito.when(employeeRepository.findBySupervisor_Id(1L)).thenReturn(employees);
 
         List<EmployeeDto> supervisedEmployees = employeeService.supervisedEmployees(1L);
 
         assertEquals(1, supervisedEmployees.size());
-        assertEquals(employee.getName(), employees.get(0).getName());
-        assertEquals(employee.getCpf(), employees.get(0).getCpf());
-        assertEquals(employee.getBirthDate(), employees.get(0).getBirthDate());
-        assertEquals(employee.getSalary(), employees.get(0).getSalary(), 0.000001);
+        assertEquals(this.employee.getName(), employees.get(0).getName());
+        assertEquals(this.employee.getCpf(), employees.get(0).getCpf());
+        assertEquals(this.employee.getBirthDate(), employees.get(0).getBirthDate());
+        assertEquals(this.employee.getSalary(), employees.get(0).getSalary(), 0.000001);
         assertEquals(supervisor.getId(), employees.get(0).getSupervisor().getId(), 0.000001);
-        assertEquals(address, employees.get(0).getAddress());
+        assertEquals(this.address, employees.get(0).getAddress());
     }
 
     @Test
@@ -226,15 +192,15 @@ public class EmployeeServiceImplTest {
         Project project = new Project();
         project.setId(1L);
 
-        Employee employee = new Employee();
-        employee.setId(1L);
+        this.employee.setId(1L);
 
         List<Employee> employees = new ArrayList<>();
-        employees.add(employee);
+        employees.add(this.employee);
 
         project.setEmployees(employees);
 
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.of(this.employee));
 
         List<Project> projectList = new ArrayList<>();
         projectList.add(project);
@@ -246,60 +212,34 @@ public class EmployeeServiceImplTest {
         assertEquals(1, employeeProjects.size());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAnExceptionWhenEmployeesIdIsInvalid(){
         Project project = new Project();
         project.setId(1L);
 
-        Employee employee = new Employee();
-        employee.setId(1L);
+        this.employee.setId(1L);
 
         List<Employee> employees = new ArrayList<>();
-        employees.add(employee);
+        employees.add(this.employee);
 
         project.setEmployees(employees);
 
-        Mockito.when(employeeRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(employeeRepository.existsById(1L)).thenReturn(false);
 
         employeeService.projects(1L);
     }
 
     @Test
     public void shouldReturnAListOfEmployeesByName(){
-        Address address = new Address(
-                "Brasil",
-                "MG",
-                "BH",
-                "Entre Rios",
-                "30710-080");
 
-        Employee tiago = new Employee(
-                "Tiago Feliz",
-                "063.620.145-70",
-                LocalDate.of(1996, 5, 30),
-                1000.0,
-                Gender.MALE,
-                address,
-                null);
-
-        Employee capitu = new Employee(
-                "Capitolina",
-                "063.620.145-70",
-                LocalDate.of(2000, 5, 30),
-                1000.0,
-                Gender.FEMALE,
-                address,
-                null);
-
-        List<Employee> employeeList = Arrays.asList(tiago);
-        //findByName
-        String employeesName = "Tiago";
+        List<Employee> employeeList = Arrays.asList(this.employee);
+        String employeesName = "Tiago Feliz";
         Mockito.when(employeeRepository.findByName(employeesName)).thenReturn(employeeList);
 
         List<EmployeeDto> employeeDtoList = employeeService.findByName(employeesName);
 
         assertEquals(1, employeeDtoList.size());
-        assertEquals(tiago.getName(), employeeDtoList.get(0).getName());
+        assertEquals(this.employee.getName(), employeeDtoList.get(0).getName());
     }
 
 }

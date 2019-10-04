@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
@@ -47,6 +48,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public DepartmentDto update(Department updateTo, Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Department department = findBy(id);
         save(department, updateTo);
         return new DepartmentDto(department);
@@ -58,12 +62,18 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void delete(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Department department = findBy(id);
         departmentRepository.delete(department);
     }
 
     @Override
     public List<EmployeeDto> employees(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Department department = findBy(id);
         List<Employee> employees = employeeRepository.findByProjectsDepartmentId(department.getId());
         return EmployeeDto.asList(employees);
@@ -71,6 +81,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<BudgetStatusDto> budgetStatus(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Department department = findBy(id);
         List<Budget> departmentBudgets = department.getBudgets();
         List<Project> departmentProjects = department.getProjects();
@@ -94,6 +107,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<ProjectDto> projects(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Department department = findBy(id);
         return ProjectDto.asList(department.getProjects());
     }
@@ -121,11 +137,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         return projects.stream().filter(project -> (project.getStartDate().isAfter(budget.getStartDate()) && project.getEndDate().isBefore(budget.getEndDate()))).collect(Collectors.toList());
     }
 
+    private boolean exists(Long id){
+        return departmentRepository.existsById(id);
+    }
+
     private Department findBy(Long id){
-        Optional<Department> department = departmentRepository.findById(id);
-        if(!department.isPresent()){
-            throw new RuntimeException("Department not found");
-        }
-        return department.get();
+        return departmentRepository.findById(id).get();
     }
 }

@@ -1,9 +1,11 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.AddressDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.repository.AddressRepository;
 import br.com.hotmart.company.service.AddressService;
+import javassist.NotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,6 +33,9 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDto update(Address updateTo, Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Address not found");
+        }
         Address address = findBy(id);
         save(address, updateTo);
         return new AddressDto(address);
@@ -50,11 +55,11 @@ public class AddressServiceImpl implements AddressService {
         return addressOptional.map(AddressDto::new);
     }
 
+    private boolean exists(Long id){
+        return addressRepository.existsById(id);
+    }
+
     private Address findBy(Long id){
-        Optional<Address> addressOptional = addressRepository.findById(id);
-        if(!addressOptional.isPresent()){
-            throw new RuntimeException("Address not found");
-        }
-        return addressOptional.get();
+        return addressRepository.findById(id).get();
     }
 }

@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.AddressDto;
 import br.com.hotmart.company.model.entity.Address;
 import br.com.hotmart.company.repository.AddressRepository;
@@ -74,10 +75,10 @@ public class AddressServiceImplTest {
         assertEquals(address.getZipCode(), savedAddress.getZipCode());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionWhenAddressIdIsNotValid(){
         Address address = new Address("Brasil", "MG", "BH", "Entre Rios", "30710-080");
-        Mockito.when(addressRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(addressRepository.existsById(1L)).thenReturn(false);
 
         addressService.update(address, 1L);
     }
@@ -86,6 +87,7 @@ public class AddressServiceImplTest {
     public void shouldUpdateAAddress(){
         Address currentAddress = new Address("Brasil", "MG", "BH", "Entre Rios", "30710-080");
         Address updateTo = new Address("Japao", "MG", "BH", "Entre Rios", "30710-080");
+        Mockito.when(addressRepository.existsById(1L)).thenReturn(true);
         Mockito.when(addressRepository.findById(1L)).thenReturn(Optional.of(currentAddress));
 
         AddressDto updatedAddress = addressService.update(updateTo, 1L);

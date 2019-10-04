@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.BudgetDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.entity.Budget;
@@ -95,6 +96,7 @@ public class BudgetServiceImplTest {
         Budget updateTo = new Budget();
         updateTo.setValue(2000);
 
+        Mockito.when(budgetRepository.existsById(1L)).thenReturn(true);
         Mockito.when(budgetRepository.findById(1L)).thenReturn(Optional.of(currentBudget));
 
         BudgetDto updatedBudget = budgetService.update(updateTo, 1L);
@@ -102,16 +104,16 @@ public class BudgetServiceImplTest {
         assertEquals(updateTo.getValue(), updatedBudget.getValue(), 0.00001);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionOnUpdateWhenBudgetIdIsInvalid(){
-        Mockito.when(budgetRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(budgetRepository.existsById(1L)).thenReturn(false);
 
         budgetService.update(new Budget(), 1L);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionOnDeleteWhenBudgetIdIsInvalid(){
-        Mockito.when(budgetRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(budgetRepository.existsById(1L)).thenReturn(false);
 
         budgetService.delete(1L);
     }

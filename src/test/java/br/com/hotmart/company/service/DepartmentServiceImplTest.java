@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.BudgetStatusDto;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
@@ -104,6 +105,7 @@ public class DepartmentServiceImplTest {
         Department updateTo = new Department();
         updateTo.setName("Volcano");
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(currentDepartment));
 
         DepartmentDto updatedDepartment = departmentService.update(updateTo, 1L);
@@ -111,23 +113,23 @@ public class DepartmentServiceImplTest {
         assertEquals(updateTo.getName(), updatedDepartment.getName());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionOnUpdateWhenDepartmentIdIsInvalid(){
-        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(false);
 
         departmentService.update(new Department(), 1L);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionOnDeleteWhenDepartmentIdIsInvalid(){
-        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(false);
 
         departmentService.delete(1L);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAnExceptionWhenDepartmentIdIsInvalid(){
-        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(false);
 
         departmentService.employees(1L);
     }
@@ -161,6 +163,7 @@ public class DepartmentServiceImplTest {
 
         department.setProjects(projects);
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
         Mockito.when(employeeRepository.findByProjectsDepartmentId(1L)).thenReturn(employees);
 
@@ -205,6 +208,7 @@ public class DepartmentServiceImplTest {
         department.setProjects(projects);
         department.setBudgets(budgets);
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
@@ -213,9 +217,9 @@ public class DepartmentServiceImplTest {
         assertEquals(BudgetStatus.GREEN, budgetStatusList.get(0).getStatus());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAnExceptionInBudgetListWhenDepartmentIdIsInvalid(){
-        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(false);
 
         departmentService.budgetStatus(1L);
     }
@@ -227,6 +231,7 @@ public class DepartmentServiceImplTest {
         department.setBudgets(new ArrayList<>());
         department.setProjects(new ArrayList<>());
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
@@ -248,6 +253,7 @@ public class DepartmentServiceImplTest {
         department.setBudgets(Arrays.asList(budget));
         department.setProjects(new ArrayList<>());
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
@@ -279,6 +285,7 @@ public class DepartmentServiceImplTest {
         department.setBudgets(Arrays.asList(budget));
         department.setProjects(Arrays.asList(project));
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
@@ -310,6 +317,7 @@ public class DepartmentServiceImplTest {
         department.setBudgets(Arrays.asList(budget));
         department.setProjects(Arrays.asList(project));
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
@@ -342,6 +350,7 @@ public class DepartmentServiceImplTest {
         department.setBudgets(Arrays.asList(budget));
         department.setProjects(Arrays.asList(project));
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<BudgetStatusDto> budgetStatusList = departmentService.budgetStatus(1L);
@@ -366,6 +375,7 @@ public class DepartmentServiceImplTest {
 
         department.setProjects(Arrays.asList(project));
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<ProjectDto> departmentProjects = departmentService.projects(1L);
@@ -376,9 +386,9 @@ public class DepartmentServiceImplTest {
         assertEquals(project.getEndDate(), departmentProjects.get(0).getEndDate());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldReturnAnExceptionWhenDepartmentIdIsInvalid(){
-        Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(false);
 
         departmentService.projects(1L);
     }
@@ -390,6 +400,7 @@ public class DepartmentServiceImplTest {
 
         department.setProjects(new ArrayList<>());
 
+        Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
         Mockito.when(departmentRepository.findById(1L)).thenReturn(Optional.of(department));
 
         List<ProjectDto> departmentProjects = departmentService.projects(1L);
