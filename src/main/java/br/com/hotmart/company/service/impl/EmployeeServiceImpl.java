@@ -1,5 +1,6 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
 import br.com.hotmart.company.model.entity.Employee;
@@ -52,6 +53,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDto update(Employee updateTo, Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Employee employee = findBy(id);
         setEmployeeSupervisor(updateTo);
         save(employee, updateTo);
@@ -60,13 +64,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private void setEmployeeSupervisor(Employee employee) {
-        if(employee.getSupervisor() != null){
-            Optional<Employee> supervisor = employeeRepository.findById(employee.getSupervisor().getId());
-            if(supervisor.isPresent()){
-                employee.setSupervisor(supervisor.get());
-            }else{
-                throw new RuntimeException("Employee's supervisor not found");
+        if(employee.getSupervisor() != null) {
+            if (!exists(employee.getSupervisor().getId())) {
+                throw new ResourceNotFoundException("Employee's supervisor not found");
             }
+            Employee supervisor = findBy(employee.getSupervisor().getId());
+            employee.setSupervisor(supervisor);
         }
     }
 
@@ -81,6 +84,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void delete(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Employee employee = findBy(id);
         employeeRepository.delete(employee);
     }
@@ -93,16 +99,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<ProjectDto> projects(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Department not found");
+        }
         Employee employee = findBy(id);
         List<Project> projects = projectRepository.findByEmployees_Id(employee.getId());
         return ProjectDto.asList(projects);
     }
 
-    public Employee findBy(Long id){ // TODO refactor public method to private
-        Optional<Employee> employee = employeeRepository.findById(id);
-        if(!employee.isPresent()){
-            throw new RuntimeException("Employee not found");
-        }
-        return employee.get();
+    public boolean exists(Long id){
+        return employeeRepository.existsById(id);
+    }
+
+    public Employee findBy(Long id){
+        return employeeRepository.findById(id).get();
     }
 }

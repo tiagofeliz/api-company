@@ -1,7 +1,12 @@
 package br.com.hotmart.company.controller;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
 import br.com.hotmart.company.model.dto.BudgetDto;
+import br.com.hotmart.company.model.form.BudgetForm;
 import br.com.hotmart.company.service.impl.BudgetServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +16,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -26,6 +32,23 @@ public class BudgetControllerTest {
 
     @MockBean
     private BudgetServiceImpl budgetService;
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    private BudgetForm budgetForm;
+
+    private String budgetJson;
+
+    @Before
+    public void setup() throws JsonProcessingException {
+        this.budgetForm = new BudgetForm();
+        this.budgetForm.setIdDepartment(1L);
+        this.budgetForm.setValue(6000);
+        this.budgetForm.setStartDate(LocalDate.of(2019, 1, 1));
+        this.budgetForm.setEndDate(LocalDate.of(2019, 1, 1));
+        this.budgetJson = this.mapper.writeValueAsString(this.budgetForm);
+    }
 
     @Test
     public void testGETShowShouldReturnOkStatus() throws Exception {
@@ -43,6 +66,24 @@ public class BudgetControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // TODO Test POST and PUT methods
+    @Test
+    public void testPOSTCreateShouldReturnCreatedStatusWhenABudgetIsCreated() throws Exception {
+        given(budgetService.create(this.budgetForm.toEntity())).willReturn(new BudgetDto(this.budgetForm.toEntity()));
+        this.mockMvc.perform(post("/budget")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.budgetJson)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testPUTUpdateShouldReturnOkWhenBudgetIsUpdated() throws Exception {
+        given(budgetService.update(this.budgetForm.toEntity(), 1L)).willReturn(new BudgetDto(this.budgetForm.toEntity()));
+        this.mockMvc.perform(put("/budget/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(this.budgetJson)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
 }

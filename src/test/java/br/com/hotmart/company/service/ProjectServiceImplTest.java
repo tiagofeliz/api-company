@@ -1,5 +1,7 @@
 package br.com.hotmart.company.service;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
+import br.com.hotmart.company.config.exception.UnprocessableEntityException;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
@@ -140,6 +142,7 @@ public class ProjectServiceImplTest {
         Project updateTo = new Project();
         updateTo.setName("Similaridade entre textos");
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(currentProject));
 
         ProjectDto updatedDepartment = projectService.update(updateTo, 1L);
@@ -147,16 +150,16 @@ public class ProjectServiceImplTest {
         assertEquals(updateTo.getName(), updatedDepartment.getName());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionOnUpdateWhenProjectIdIsInvalid(){
-        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(false);
 
         projectService.update(new Project(), 1L);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionOnDeleteWhenProjectIdIsInvalid(){
-        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(false);
 
         projectService.delete(1L);
     }
@@ -187,8 +190,10 @@ public class ProjectServiceImplTest {
                 null);
         employee.setId(1L);
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
+        Mockito.when(employeeService.exists(1L)).thenReturn(true);
 
         Long projectId = 1L;
         Long employeeId = 1L;
@@ -240,7 +245,9 @@ public class ProjectServiceImplTest {
                 null);
         employee.setId(1L);
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.exists(1L)).thenReturn(true);
         Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
 
         Long projectId = 1L;
@@ -255,29 +262,30 @@ public class ProjectServiceImplTest {
         assertEquals(employee.getGender(), employees.get(1).getGender());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionWhenProjectIdIsInvalid(){
-        Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.empty());
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(false);
 
         Long projectId = 1L;
         Long employeeId = 1L;
         projectService.registerEmployee(projectId, employeeId);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void shouldThrowAExceptionWhenEmployeeIdIsInvalid(){
         Project project = new Project();
         project.setId(1L);
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
-        Mockito.when(employeeService.findBy(1L)).thenReturn(null);
+        Mockito.when(employeeService.exists(1L)).thenReturn(false);
 
         Long projectId = 1L;
         Long employeeId = 1L;
         projectService.registerEmployee(projectId, employeeId);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = UnprocessableEntityException.class)
     public void shouldThrowAnExceptionWhenEmployeeAlredyWorksInTheProject(){
         Project project = new Project();
         project.setId(1L);
@@ -290,7 +298,9 @@ public class ProjectServiceImplTest {
 
         project.setEmployees(employees);
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
+        Mockito.when(employeeService.exists(1L)).thenReturn(true);
         Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
 
         Long projectId = 1L;
@@ -311,6 +321,7 @@ public class ProjectServiceImplTest {
 
         project.setEmployees(employees);
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         Mockito.when(employeeService.findBy(1L)).thenReturn(employee);
 
@@ -321,12 +332,13 @@ public class ProjectServiceImplTest {
         assertTrue(projectEmployees.isEmpty());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = UnprocessableEntityException.class)
     public void shouldThrowAnExceptionWhenProjectHasNoEmployees(){
         Project project = new Project();
         project.setId(1L);
         project.setEmployees(new ArrayList<>());
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
 
         Long projectId = 1L;
@@ -334,7 +346,7 @@ public class ProjectServiceImplTest {
         projectService.unregisterEmployee(projectId, employeeId);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = UnprocessableEntityException.class)
     public void shouldThrowAnExceptionWhenEmployeeDontWorksInTheProject(){
         Project project = new Project();
         project.setId(1L);
@@ -347,6 +359,7 @@ public class ProjectServiceImplTest {
 
         project.setEmployees(Arrays.asList(employee));
 
+        Mockito.when(projectRepository.existsById(1L)).thenReturn(true);
         Mockito.when(projectRepository.findById(1L)).thenReturn(Optional.of(project));
         Mockito.when(employeeService.findBy(1L)).thenReturn(employeeToBeFounded);
 

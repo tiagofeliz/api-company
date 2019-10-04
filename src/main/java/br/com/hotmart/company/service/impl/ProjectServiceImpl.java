@@ -1,5 +1,7 @@
 package br.com.hotmart.company.service.impl;
 
+import br.com.hotmart.company.config.exception.ResourceNotFoundException;
+import br.com.hotmart.company.config.exception.UnprocessableEntityException;
 import br.com.hotmart.company.model.dto.DepartmentDto;
 import br.com.hotmart.company.model.dto.EmployeeDto;
 import br.com.hotmart.company.model.dto.ProjectDto;
@@ -52,13 +54,16 @@ public class ProjectServiceImpl implements ProjectService {
     private Department getDepartment(Long id) {
         Optional<DepartmentDto> departmentDto = departmentService.findById(id);
         if(!departmentDto.isPresent()){
-            throw new RuntimeException("Project's department not found");
+            throw new ResourceNotFoundException("Project's department not found");
         }
         return departmentDto.get().toEntity();
     }
 
     @Override
     public ProjectDto update(Project updateTo, Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Project not found");
+        }
         Project project = findBy(id);
         save(project, updateTo);
         return new ProjectDto(project);
@@ -73,22 +78,38 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void delete(Long id) {
+        if(!exists(id)){
+            throw new ResourceNotFoundException("Project not found");
+        }
         Project project = findBy(id);
         projectRepository.delete(project);
     }
 
     @Override
     public List<EmployeeDto> registerEmployee(Long projectId, Long employeeId) {
+        if(!exists(projectId)){
+            throw new ResourceNotFoundException("Project not found");
+        }
         Project project = findBy(projectId);
-        Employee employee = employeeService.findBy(employeeId); // TODO refactor public method to private
+        Employee employee = getEmployee(employeeId);
         register(project, employee);
         return EmployeeDto.asList(project.getEmployees());
     }
 
+    private Employee getEmployee(Long employeeId) {
+        if(!employeeService.exists(employeeId)){
+            throw new ResourceNotFoundException("Employee not found");
+        }
+        return employeeService.findBy(employeeId);
+    }
+
     @Override
     public List<EmployeeDto> unregisterEmployee(Long projectId, Long employeeId) {
+        if(!exists(projectId)){
+            throw new ResourceNotFoundException("Project not found");
+        }
         Project project = findBy(projectId);
-        Employee employee = employeeService.findBy(employeeId); // TODO refactor public method to private
+        Employee employee = employeeService.findBy(employeeId);
         unregister(project, employee);
         return EmployeeDto.asList(project.getEmployees());
     }
@@ -101,7 +122,7 @@ public class ProjectServiceImpl implements ProjectService {
         }else{
             List<Employee> projectEmployees = project.getEmployees();
             if(employeeWorksOnTheProject(projectEmployees, employee.getId())){
-                throw new RuntimeException("The employee alredy works on this project");
+                throw new UnprocessableEntityException("The employee alredy works on this project");
             }
             projectEmployees.add(employee);
         }
@@ -109,23 +130,23 @@ public class ProjectServiceImpl implements ProjectService {
 
     private void unregister(Project project, Employee employee) {
         if(project.getEmployees().isEmpty()){
-            throw new RuntimeException("This project have no employees to unregister");
+            throw new UnprocessableEntityException("This project have no employees to unregister");
         }else{
             List<Employee> projectEmployees = project.getEmployees();
             if(!employeeWorksOnTheProject(projectEmployees, employee.getId())){
-                throw new RuntimeException("The employee dont works on this project");
+                throw new UnprocessableEntityException("The employee dont works on this project");
             }
             List<Employee> employeeList = projectEmployees.stream().filter(filteredEmployee -> Objects.equals(filteredEmployee.getId(), employee.getId())).collect(Collectors.toList());
             projectEmployees.remove(employeeList.get(0));
         }
     }
 
+    public boolean exists(Long id){
+        return projectRepository.existsById(id);
+    }
+
     public Project findBy(Long id){
-        Optional<Project> project = projectRepository.findById(id);
-        if(!project.isPresent()){
-            throw new RuntimeException("Project not found");
-        }
-        return project.get();
+        return projectRepository.findById(id).get();
     }
 
     private boolean employeeWorksOnTheProject(List<Employee> projectEmployees, Long employeeId){
