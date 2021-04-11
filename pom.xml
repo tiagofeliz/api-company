@@ -8,7 +8,7 @@
 		<version>2.1.8.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>br.com.hotmart</groupId>
+	<groupId>br.com.tiagofeliz</groupId>
 	<artifactId>company</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>company</name>

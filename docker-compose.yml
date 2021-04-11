@@ -20,7 +20,7 @@ services:
   app:
     build:
       context: .
-    image: hotmart/company
+    image: tiagofeliz/company
     container_name: app
     depends_on:
       - db
